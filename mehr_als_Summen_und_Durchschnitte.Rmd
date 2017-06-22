@@ -1,0 +1,107 @@
+---
+title: "Mehrals"
+output: html_document
+---
+
+```{r setup, echo=FALSE}
+library(ggplot2)
+library(gridExtra)
+data("algae", package="DMwR2")
+
+```
+
+
+## Daten
+
+Daten sind gut. Sie liefern uns Informationen, wieviele Einheiten wir verkauft haben; wie unser Umsatz war; wie es mit der Zufriedenheit unserer Kunden aussieht. Welche Werbebanner am meisten geklickt wurden. Welche unserer Strategien am besten funktioniert hat. Woraus wir unsererseits folgern können, wie wir jetzt am besten weiter vorgehen. Daten, konvertiert in Erkenntnisgewinn - und finanziellen Gewinn.
+
+Daten sind schlecht. Daten sind "zuviel", um mit dem menschlichen Auge erfasst werden zu können. Wir müssen sie irgendwie zusammenfassen, vereinfachen. Wieviel Vereinfachung ist ausreichend? Einen Schritt zurück: Was überhaupt ist eine sinnvolle Vereinfachung, ein angemessenes "summary" unserer Daten? Wie aussagekräftig ist der Mittelwert, den ich in den meisten Reports angezeigt bekomme?
+
+Daten sind Vergangenheit, _in the past_. Vergangene Aktienkurse; vergangene Verkaufszahlen; vergangene Adclicks. Interessiert mich der Schnee von gestern? Ja - weil ich auf den Schnee von morgen schliessen möchte! Wie kann ich das machen? Wie kann ich die in den Daten enthaltene Information optimal nutzen und die relevanten Variablen "herausfischen"? Hier ist das Business-Know-How wichtig - aber nicht alles. Methoden aus Data Science, Machine Learning und Statistik warten nur darauf, mich zu unterstützen.
+
+Und schliesslich gibt es eine Klasse von Daten, die anders sind - scheinbar unstrukturiert; vielschichtig; extrem hochauflösend und überwältigend schon aufgrund ihrer Quantität. Für uns Menschen ist es selbstverständlich, dass wir Sprache verstehen, einen Hund von einer Katze unterscheiden können, dass fahrende Autos anders klingen, wenn es nass als wenn es trocken ist. Auf Pixelebene aber gibt es nichts, was einen Hund zum Hund oder eine Katze zur Katze macht. 
+Diese Daten, diese Aufgabenstellungen sind das Reich von Deep Learning, das mit gar nicht so neuen Konzepten, aber immer ausgefeilteren Algorithmen und viel Rechenpower jeden Monat neue Rekorde zu brechen scheint. Aber das betrifft doch nur "die Grossen" - Google, Facebook, Microsoft, Apple ... oder? Oder ist Deep Learning auch etwas für mich und meine Daten?
+
+## Pfade durch den Jungle
+
+Wenn heute Daten ein Jungle sind, sind Algorithmen es noch mehr. In diesem Artikel wollen wir Pfade durch den Algorithmenjungle ziehen, die Ihnen helfen sollen, die für Ihre Anforderungen und Bedürfnisse relevanten Methoden zu finden.
+Daten werden dabei für uns vor allem in zwei Inkarnationen auftreten: Zum einen als Herausforderung. Hier geht es darum, die übergrosse Datenmenge in den Griff zu bekommen, zu summarisieren, ohne wichtige Features zu übersehen oder zu verfälschen.
+Zum anderen als Chance. Welche Methoden stellen Data Science, Machine Learning, Deep Learning uns zur Verfügung, um Muster in den Daten zu finden und valide Schlussfolgerungen zu ziehen? Dabei geht es nicht um ein Potpourri der Methoden, ein Who's who der Algorithmen mit dem Ziel, alles einmal erwähnt zu haben. Es geht um den Überblick: Wie unterscheiden sich die Herangehensweisen, was sind die Konsequenzen, wenn ich mich für Methode B statt Methode A entscheide? Welches Vorgehen passt zu welchen Daten, zu welchen Fragestellungen? Es geht darum, den Jungle zu "mappen", um das geeignete Vorgehen für den konkreten Anwendungsfall finden zu können.
+
+## Daten als Herausforderung: Was ist ein gutes Summary?
+
+Dass Mittelwerte ein fragwürdiges Summary sein können, hat jeder schon einmal gehört. Aber warum eigentlich ist das so bzw. in welchen Fällen?
+Schauen wir uns zunächst einen Fall an, wo es nicht schadet, einen Mittelwert anzugeben: Abb. 1a.
+
+```{r, echo=FALSE}
+g1 <- ggplot(algae, aes(x = mxPH)) + geom_density(na.rm = TRUE) + 
+  geom_vline(aes(xintercept = mean(algae$mxPH, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
+  geom_vline(aes(xintercept = median(algae$mxPH, na.rm = TRUE), linetype = "Median"), color = 'green') + 
+  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+                      guide = guide_legend(override.aes = list(color = c("red", "green")))) +
+ xlab("") + ylab("Dichte") + theme(legend.position="bottom")
+
+g2 <- ggplot(algae, aes(x = a6)) + geom_density(na.rm = TRUE) + 
+  geom_vline(aes(xintercept = mean(algae$a6, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
+  geom_vline(aes(xintercept = median(algae$a6, na.rm = TRUE), linetype = "Median"), color = 'green') + 
+  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+                      guide = guide_legend(override.aes = list(color = c("red", "green")))) +
+  xlab("") + ylab("Dichte") + theme(legend.position="bottom") 
+
+grid.arrange(g1, g2, ncol = 2)
+```
+
+Der Mittelwert liegt tatsächlich mittig in der Verteilung, direkt neben dem Median, dem Wert, unterhalb und oberhalb dessen jeweils die Hälfte der Werte liegen. Tatsächlich ist die hier gemessene Variable mehr oder weniger normalverteilt. Eine Normalverteilung ist symmetrisch und durch Mittelwert und Streuung (Varianz) hinreichend charakterisiert.
+
+Wie kann es aber ausschauen, wenn die Daten weniger "schön normalverteilt" sind? Ein Beispiel sehen wir in Abb. 1b. Während der Median das Gros der Daten, das nahe 0 liegt, gut beschreibt, ist der Mittelwert weit nach rechts verschoben. Warum? Beim Median kommt es allein auf die Ordnung der Werte an, die Abstände sind unerheblich. Beim Mittelwert gehen die Abstände direkt in die Berechnung ein. Krasses Beispiel: Der Median der Liste (1,2,3,4,1000) ist 3, der Mittelwert aber 202!
+
+Insofern ist der Median, wenn es um knappe Charakterisierung der Daten geht, schon einmal ein besserer Kandidat als der Mittelwert. Für wirklich wichtige Daten und wenn ich den Platz habe, ersetzt aber nichts die Darstellung der gesamten Verteilung. 
+
+Wie aussagekräftig ist z.B. der Median, wenn ich Daten habe wie in Abb. 2?
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+betas <- rbeta(100,.5,.5)
+ggplot(data.frame(x=betas), aes(x = x)) + geom_histogram(bins = 20) +
+  geom_vline(aes(xintercept = mean(x), linetype = "Mittelwert"), color = 'red') + 
+  geom_vline(aes(xintercept = median(x), linetype = "Median"), color = 'green') + 
+  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+                      guide = guide_legend(override.aes = list(color = c("red", "green")))) +
+  ylab("Anzahl")
+
+  
+```
+
+Eine beliebte klassische Methode, eine ganze Verteilung zu visualisieren, statt sie auf eine einzige Zahl zu reduzieren, ist - seit langem - das Boxplot (Abb. TBD). Für den Fall in Abb. TBD funktioniert das auch ziemlich gut: Wir sehen zum einen den Median (dicke horizontale Linie) und die für den Namen verantwortliche Box. In der Box liegen alle Werte zwischen dem 25. und dem 75. Perzentil. (Kurz zur Terminologie: Das n-te Perzentil, oder auch 0.n Quantil, ist der Wert, unterhalb dessen in der Verteilung n Prozent der Werte liegen. Der Median ist also auch das 50. Perzentil oder 0.5 Quantil. Häufig trifft man auch auf die Bezeichnung Quartil; das 1. Quartil ist dann gleich dem 25. Perzentil, das 3 . Quartil gleich dem 75. Perzentil.) Die vertikalen Linien ("Barthaare") haben mit dem sog. inter quartile range (IQR) zu tun. Der IQR ist der Abstand zwischen dem 1. und dem 3. Quartil. Das obere Barthaar reicht dann bis zu dem grössten Wert, der nicht mehr als 1.5 mal IQR von der oberen Boxgrenze entfernt ist; das untere entsprechend bis zum kleinsten Wert, dessen Entfernung zur unteren Boxgrenze nicht mehr als 1.5 mal IQR beträgt. Werte, die dann noch ausserhalb liegen, sind als Punkte eingezeichnet und werden oft als Outlier gesehen.
+Was zeigt uns nun das Boxplot in Abb. TBD? 
+
+```{r, echo=FALSE}
+g1 <- ggplot(algae, aes(x = 1, y = a1)) + geom_boxplot() + ylab("")
+g2 <- ggplot(data.frame(y = betas), aes(x = 1, y = betas)) + geom_boxplot() + ylab("")
+grid.arrange(g1, g2, ncol= 2)
+```
+
+Auch das Boxplot aber ist eine Vereinfachung. Warum aber 
+
+
+
+boxplot vs density 
+qqplot
+TBD tufte!!!
+
+## Daten als Herausforderung: Warum ist die Streuung wichtig?
+bootstrap
+
+## Daten als Herausforderung: Was charakterisiert eine Beziehung?
+anscombe
+correlation shinyapp
+
+## Daten als Herausforderung: Aber meine Daten sind viel zu hochdimensional!
+t-sne
+
+## Daten als Herausforderung: Was kann ich jetzt für Schlussfolgerungen ziehen?
+
+## Daten als Chance: 
+
+## 
+
+
