@@ -38,20 +38,23 @@ g1 <- ggplot(algae, aes(x = mxPH)) + geom_density(na.rm = TRUE) +
   geom_vline(aes(xintercept = mean(algae$mxPH, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(algae$mxPH, na.rm = TRUE), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Mass", values = c(2, 2), 
-                      guide = guide_legend(override.aes = list(color = c("red", "green")))) +
+                      guide = guide_legend(override.aes = list(color = c("green", "red")))) +
  xlab("") + ylab("Dichte") + theme(legend.position="bottom")
 
-g2 <- ggplot(algae, aes(x = a6)) + geom_density(na.rm = TRUE) + 
-  geom_vline(aes(xintercept = mean(algae$a6, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
-  geom_vline(aes(xintercept = median(algae$a6, na.rm = TRUE), linetype = "Median"), color = 'green') + 
+g2 <- ggplot(algae, aes(x = a1)) + geom_density(na.rm = TRUE) + 
+  geom_vline(aes(xintercept = mean(algae$a1, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
+  geom_vline(aes(xintercept = median(algae$a1, na.rm = TRUE), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Mass", values = c(2, 2), 
-                      guide = guide_legend(override.aes = list(color = c("red", "green")))) +
-  xlab("") + ylab("Dichte") + theme(legend.position="bottom") 
+  guide = guide_legend(override.aes = list(color = c("green", "red")))) +
+  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + ggtitle("Dataset A")
 
 grid.arrange(g1, g2, ncol = 2)
 ```
 
 Der Mittelwert liegt tatsächlich mittig in der Verteilung, direkt neben dem Median, dem Wert, unterhalb und oberhalb dessen jeweils die Hälfte der Werte liegen. Tatsächlich ist die hier gemessene Variable mehr oder weniger normalverteilt. Eine Normalverteilung ist symmetrisch und durch Mittelwert und Streuung (Varianz) hinreichend charakterisiert.
+
+
+### Der Median
 
 Wie kann es aber ausschauen, wenn die Daten weniger "schön normalverteilt" sind? Ein Beispiel sehen wir in Abb. 1b. Während der Median das Gros der Daten, das nahe 0 liegt, gut beschreibt, ist der Mittelwert weit nach rechts verschoben. Warum? Beim Median kommt es allein auf die Ordnung der Werte an, die Abstände sind unerheblich. Beim Mittelwert gehen die Abstände direkt in die Berechnung ein. Krasses Beispiel: Der Median der Liste (1,2,3,4,1000) ist 3, der Mittelwert aber 202!
 
@@ -66,36 +69,82 @@ ggplot(data.frame(x=betas), aes(x = x)) + geom_histogram(bins = 20) +
   geom_vline(aes(xintercept = median(x), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Mass", values = c(2, 2), 
                       guide = guide_legend(override.aes = list(color = c("red", "green")))) +
-  ylab("Anzahl")
+  ylab("Anzahl") + ggtitle("Dataset B")
 
   
 ```
 
+
+### Boxplots
+
 Eine beliebte klassische Methode, eine ganze Verteilung zu visualisieren, statt sie auf eine einzige Zahl zu reduzieren, ist - seit langem - das Boxplot (Abb. TBD). Für den Fall in Abb. TBD funktioniert das auch ziemlich gut: Wir sehen zum einen den Median (dicke horizontale Linie) und die für den Namen verantwortliche Box. In der Box liegen alle Werte zwischen dem 25. und dem 75. Perzentil. (Kurz zur Terminologie: Das n-te Perzentil, oder auch 0.n Quantil, ist der Wert, unterhalb dessen in der Verteilung n Prozent der Werte liegen. Der Median ist also auch das 50. Perzentil oder 0.5 Quantil. Häufig trifft man auch auf die Bezeichnung Quartil; das 1. Quartil ist dann gleich dem 25. Perzentil, das 3 . Quartil gleich dem 75. Perzentil.) Die vertikalen Linien ("Barthaare") haben mit dem sog. inter quartile range (IQR) zu tun. Der IQR ist der Abstand zwischen dem 1. und dem 3. Quartil. Das obere Barthaar reicht dann bis zu dem grössten Wert, der nicht mehr als 1.5 mal IQR von der oberen Boxgrenze entfernt ist; das untere entsprechend bis zum kleinsten Wert, dessen Entfernung zur unteren Boxgrenze nicht mehr als 1.5 mal IQR beträgt. Werte, die dann noch ausserhalb liegen, sind als Punkte eingezeichnet und werden oft als Outlier gesehen.
-Was zeigt uns nun das Boxplot in Abb. TBD? 
+Was zeigt uns nun das Boxplot in Abb. TBD? Man sieht unmittelbar, dass das obere Rechteck viel höher ist als das untere: Das heisst, zwischen dem 25. Perzentil und dem Median liegen die Daten sehr eng zusammen; zwischem dem Median und dem 75. Perzentil liegen sie weiter gestreut. Dasselbe Bild zeigen uns die "Barthaare": die obere Linie reicht sehr weit nach oben, während die untere direkt bei 0 trunkiert wird. Nicht zufällig sind, was hier dargestellt wird, dieselben Daten wie in Abb. TBD. Wir können die Aussagekraft des Boxplots noch steigern, indem wir, wie in Abb. TBD geschehen, Mittelwert und Modus (den häufigsten Wert der Verteilung, in diesem Fall 0) hinzufügen.
+
 
 ```{r, echo=FALSE}
 g1 <- ggplot(algae, aes(x = 1, y = a1)) + geom_boxplot() + ylab("")
-g2 <- ggplot(data.frame(y = betas), aes(x = 1, y = betas)) + geom_boxplot() + ylab("")
+mod <-algae %>% group_by(a1) %>% summarize(n = n()) %>% arrange(desc(n)) %>% select(a1) %>% head(1)
+g2 <- ggplot(algae, aes(x = 1, y = a1))  + geom_boxplot() + 
+  geom_hline(aes(yintercept = mean(algae$a1)), color = "green", linetype=2) + 
+  geom_hline(aes(yintercept = mod), color = "blue", linetype=4)  + 
+  ylab("")
+grid.arrange(g1, g2, ncol= 2, top = "Dataset A")
+```
+
+### Violin plots
+
+Wie hilfreich ist ein Boxplot für die Daten in abb. TBD? Abb. TBD zeigt es: Man sieht nicht ohne weiteres, dass hier eine bimodale Verteilung, mit den Modi an den beiden Enden, vorliegt. Das TBD an der y -Achse, um das wir das Boxplot ergänzt haben, ist da schon hilfreicher. Warum dann aber nicht gleich die ganze Verteilung zeigen, wenn das genauso viel Platz braucht? Abb. TBD zeigt ein sog. violin plot, nichts anderes als eine rotierte und gespiegelte Dichtekurve. Hier sieht man sofort, was los ist!
+
+
+
+```{r, echo=FALSE}
+g1 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_boxplot() + geom_rug() +
+  ylab("")
+g2 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_violin() + geom_rug() + ylab("")
+
+grid.arrange(g1, g2, ncol= 2, top = "Dataset B")
+```
+
+### Quantile plots
+
+Auf den ersten Blick weniger leicht zu lesen als violin plots, dafür aber sehr aussagekräftig sind quantile plots. Hier werden die Originaldaten dem Wert nach geordnet und dann gegen ihre Position in der Ordnung, ausgedrückt als Proportion zwischen 0 und 1, geplottet.
+
+```{r, echo=FALSE}
+sorted <- sort(algae$a1)
+df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
+g1 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
+  ggtitle("Dataset A")
+sorted <- sort(betas)
+df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
+g2 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
+  ggtitle("Dataset B")
 grid.arrange(g1, g2, ncol= 2)
 ```
 
-Auch das Boxplot aber ist eine Vereinfachung. Warum aber 
+Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.25, 0.5, 0.75) ablesen.
+Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. TBD und Abb. TBD: Links haben wir Dataset A, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
+Ganz anders Dataset B, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
+
+### 
+
+Womit wir uns hier beschäftigt haben, ist die Aussagekraft und Informationsdichte von Plots und Kennzahlen. Das Wort Informationsdichte kann man aber auch wörtlicher verstehen: Wie lassen sich Plots designen, die den vorhandenen Raum optimal ausnutzen, d.h. bei gegebener räumlicher Beschränkung maximale Information übermitteln?
 
 
+Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen.
 
-boxplot vs density 
-qqplot
-TBD tufte!!!
+
 
 ## Daten als Herausforderung: Warum ist die Streuung wichtig?
+
+Bis jetzt haben
+
 bootstrap
 
 ## Daten als Herausforderung: Was charakterisiert eine Beziehung?
 anscombe
 correlation shinyapp
 
-## Daten als Herausforderung: Aber meine Daten sind viel zu hochdimensional!
+## Daten als Herausforderung: Aber die Dimensionalität meiner Daten ist viel zu hoch!
 t-sne
 
 ## Daten als Herausforderung: Was kann ich jetzt für Schlussfolgerungen ziehen?
@@ -104,4 +153,6 @@ t-sne
 
 ## 
 
+## Literatur
+Visualisierung: Chambers, Tufte
 
