@@ -6,6 +6,10 @@ output: html_document
 ```{r setup, echo=FALSE}
 library(ggplot2)
 library(gridExtra)
+library(dplyr)
+library(datasauRus)
+library(ggthemes)
+library(ggExtra)
 data("algae", package="DMwR2")
 
 ```
@@ -27,6 +31,11 @@ Diese Daten, diese Aufgabenstellungen sind das Reich von Deep Learning, das mit 
 Wenn heute Daten ein Jungle sind, sind Algorithmen es noch mehr. In diesem Artikel wollen wir Pfade durch den Algorithmenjungle ziehen, die Ihnen helfen sollen, die für Ihre Anforderungen und Bedürfnisse relevanten Methoden zu finden.
 Daten werden dabei für uns vor allem in zwei Inkarnationen auftreten: Zum einen als Herausforderung. Hier geht es darum, die übergrosse Datenmenge in den Griff zu bekommen, zu summarisieren, ohne wichtige Features zu übersehen oder zu verfälschen.
 Zum anderen als Chance. Welche Methoden stellen Data Science, Machine Learning, Deep Learning uns zur Verfügung, um Muster in den Daten zu finden und valide Schlussfolgerungen zu ziehen? Dabei geht es nicht um ein Potpourri der Methoden, ein Who's who der Algorithmen mit dem Ziel, alles einmal erwähnt zu haben. Es geht um den Überblick: Wie unterscheiden sich die Herangehensweisen, was sind die Konsequenzen, wenn ich mich für Methode B statt Methode A entscheide? Welches Vorgehen passt zu welchen Daten, zu welchen Fragestellungen? Es geht darum, den Jungle zu "mappen", um das geeignete Vorgehen für den konkreten Anwendungsfall finden zu können.
+
+# Teil 1: Daten als Herausforderung
+
+Bevor wir fragen, was Data Science und Artificial Intelligence uns geben können, sollten wir schauen, was wir mitnehmen auf die Reise durch den Dschungel. Das ist v.a. ein Verständnis für die Grundlagen - wie exploriere ich Daten, wie charakterisiere ich sie so präzis wie möglich?
+
 
 ## Daten als Herausforderung: Was ist ein gutes Summary?
 
@@ -125,34 +134,124 @@ Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.
 Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. TBD und Abb. TBD: Links haben wir Dataset A, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
 Ganz anders Dataset B, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
 
-### 
+### Informationsdichte und Plot-Design
 
 Womit wir uns hier beschäftigt haben, ist die Aussagekraft und Informationsdichte von Plots und Kennzahlen. Das Wort Informationsdichte kann man aber auch wörtlicher verstehen: Wie lassen sich Plots designen, die den vorhandenen Raum optimal ausnutzen, d.h. bei gegebener räumlicher Beschränkung maximale Information übermitteln?
 
 
-Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen.
+Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen. Wer sich hierfür interessiert, dem seien die Bücher von Edward Tufte empfohlen [1]. Ein guter Einstieg ist der Essay über den Cognitive Style of Powerpoint([2]). Wer den zum ersten Mal liest, wird nicht nur seine ggf. präexistenten Bedenken gegen den bullet point style bestätigt finden (von Gewährspersonen wie Richard Feynman!): Das Eindrucksvollste ist, wie absurd die geringe Informationsdichte von typischen Powerpoint-"Tabellen" oder - Diagrammen plötzlich erscheint, wenn man sie mit hoch informativen Grafiken wie sparklines([3]) oder slope graphs([4]) vergleicht.
 
 
+## Daten als Herausforderung: Warum ist die Streuung der Daten wichtig?
 
-## Daten als Herausforderung: Warum ist die Streuung wichtig?
+Zurück zu den Kennzahlen. Bisher haben wir nur über Summaries bestehender Daten gesprochen.
+Vielleicht ist das auch genug: Vielleicht möchte ich tatsächlich nur zusammenfassen, wie, unter gegebenen, ganz konkreten Bedingungen, "die Zahlen sich entwickelt haben". Aber oft will ich mehr: in andere Kontexte extrapolieren, zukünftige Werte vorhersagen oder (worum es im zweiten Teil gehen wird!) Zusammenhänge zwischen Variablen finden.
 
-Bis jetzt haben
+Sobald wir verallgemeinern, vorhersagen oder extrapolieren, verlassen wir das Reich der Gewissheiten. Es ist essentiell, dass wir uns über den Unsicherheitsfaktor im klaren sind und ihn quantifizieren können. Die meisten der Methoden, die wir in Teil zwei besprechen werden, kommen bereits mit Massen für die Unsicherheit. Was kann man machen, wenn die Methode kein solches Mass liefert? 
 
-bootstrap
+Eine universell einsetzbare Methode ist der Bootstrap. Das geht so: Ich möchte die Beziehung zwischen zwei Variablen, sagen wir x und y, "allgemeingültig" charakterisieren, habe aber nur ein fixes Set von Daten. Dieses Dataset ist eine mögliche Stichprobe von Werten aus der Population aller Werte. Nun behandle ich einfach mein Dataset, meine Stichprobe, selber als Population: Ich ziehe wiederholt Stichproben aus der Population und berechne jeweils die Beziehung zwischen x und y. (Die Analogie ist cum grano salis zu nehmen; beim Bootstrap handelt es sich um _sampling mit replacement_, d.h. ein und derselbe Wert darf mehrmals gezogen werden, während das "in der Realität" meist nicht der Fall sein dürfte.) Jetzt habe ich also z.B. 100 Schätzungen meines Kennwertes und berechne die Standardabweichung, die durchschnittliche quadrierte Abweichung der Schätzungen von ihrem Mittelwert.
+
+Gut - zum Umgang mit Streuung und Unsicherheit ist also der wichtigste Punkt, dass wir sie angeben müssen.
+Aber was exakt soll ich angeben? Vielleicht haben Sie schon einmal die Floskel "+/-2 Standardabweichungen" gehört. Woher kommt das und was bedeutet diese Information?
+Grundlage des ganzen ist das Central Limit Theorem. Das Central Limit Theorem besagt, dass Mittelwerte einer Zufallsvariable im Limit unendlicher Stichprobengrösse normalverteilt sind. Die Normalverteilung der Mittelwerte hat als Mittelwert den wahren Mittelwert und als Standardabweichung den sog. Standardfehler des Mittelwerts (die Standardabweichung der gemessenen Variable, geteilt durch die Wurzel der Stichprobengrösse). 
+Was bringt uns das? Für die Normalverteilung wissen wir, wieviel Prozent der Verteilung zwischen dem Mittelwert und einer, zwei oder drei Standardabweichungen liegen (Abb. TBD)
+
+```{r, echo=FALSE}
+normal_prob_area_plot <- function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 * sd, mean + 4 * sd), fcolor = "blue", title = "") {
+    x <- seq(limits[1], limits[2], length.out = 100)
+    xmin <- max(lb, limits[1])
+    xmax <- min(ub, limits[2])
+    areax <- seq(xmin, xmax, length.out = 100)
+    area <- data.frame(x = areax, ymin = 0, ymax = dnorm(areax, mean = mean, sd = sd))
+    (ggplot()
+     + geom_line(data.frame(x = x, y = dnorm(x, mean = mean, sd = sd)),
+                 mapping = aes(x = x, y = y))
+     + geom_ribbon(data = area, mapping = aes(x = x, ymin = ymin, ymax = ymax), fill = fcolor)
+     + scale_x_continuous(limits = limits) + ggtitle(title))
+}
+g1 <- normal_prob_area_plot(-3,3, title = "99% Dichte")
+g2 <- normal_prob_area_plot(-2,2, title = "95% Dichte")
+g3 <- normal_prob_area_plot(-1,1, title = "68% Dichte")
+grid.arrange(g3,g2,g1, ncol=2, nrow=3, top="")
+```
+
+Damit kann ich für meine Parameterschätzung ein sog. Konfidenzintervall angeben. Leicht vereinfachend ausgedrückt: Wenn ich sage, meine Schätzung für den Parameter ist p +/- 2 mal Standardfehler, dann bin ich mir 95% sicher, dass der Parameter in diesem Bereich liegt. (Das ist in der Tat eine Vereinfachung. Siehe Literatur (TBD).) 
+Was ich jetzt noch bedenken muss: Ein Konfidenzintervall für einen Parameter ist nicht dasselbe wie ein sog. Vorhersageintervall (_prediction interval_). Das Vorhersageintervall bezieht sich auf eine konkrete Vorhersage für neue Daten, und ist (z.T. erheblich) breiter als das Konfidenzintervall. Wir werden in Teil 2 ein Beispiel sehen.
+
 
 ## Daten als Herausforderung: Was charakterisiert eine Beziehung?
-anscombe
-correlation shinyapp
+
+"Die Korrelation zwischen Investition in Onlinemarketing und Produktabsatz beträgt 0.8". Ein hervorragendes Ergebnis, oder? (Der Korrelationskoeffizient liegt zwischen 0 und 1; tatsächlich ist 0.8 eine sehr hohe Korrelation.) Nun ja, vielleicht. Auch hier gilt wieder: Ein Bild sagt mehr als 1000 Kennzahlen.
+Nehmen wir an, ich habe ein bivariates Dataset mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
+Schauen wir auf Abb. TBD: Alle diese Datasets erfüllen die o.g. Bedingungen ([TBD]). Jede Menge Zusammenhänge - nur eben nicht der lineare, den der Korrelationskoeffizient voraussetzt!
+
+```{r, echo=FALSE}
+ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
+    geom_point()+
+    theme_void()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol=3)
+```
+
+Berühmt ist auch Simpson's Paradox, bei dem sich die Einschätzung komplett ins Gegenteil verkehrt, je nachdem, ob man die Daten als Gesamtheit betrachtet oder getrennt nach Subgruppen. Siehe Abb. TBD: Die bei Gesamtbetrachtung stark positive Beziehung der Variablen wird zu einer stark negativen, wenn man das Dataset in Gruppen aufteilt.
+
+```{r, echo=FALSE}
+ggplot(simpsons_paradox, aes(x=x, y=y, colour=dataset))+
+    geom_point()+
+    theme_void()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol=3)
+```
+
+Wie visualisiere ich nun am besten den Zusammenhang zwischen zwei Variablen? Das klassische Scatterplot ist dazu hervorragend geeignet. Beim normalen Scatterplot ist es allerdings nicht unbedingt einfach, die univariaten Verteilungen zu "sehen". Hier hilft es, z.B. ein Histogramm oder eine Dichtekurve hinzuzufügen, parallel zu den Achsen (Abb. TBD)
+
+```{r, echo=FALSE}
+g1 <- ggplot(datasaurus_dozen_wide, aes(x = bullseye_x, y = bullseye_y)) + geom_point() +
+  theme_tufte(ticks=F) + theme(axis.title=element_blank(), axis.text=element_blank())
+g1 <- g1 %>% ggMarginal(type = "density")
+g2 <- ggplot(datasaurus_dozen_wide, aes(x = bullseye_x, y = bullseye_y)) + geom_point() +
+  theme_tufte(ticks=F) + theme(axis.title=element_blank(), axis.text=element_blank())
+g2 <- g2 %>% ggMarginal(type = "histogram", fill="transparent", bins = 20)
+grid.arrange(g2,g1, ncol=2)
+```
+
+Diese Form der Visualisierung funktioniert hervorragend für bivariate Daten. Was, wenn die Zahl der interessierenden Varialen weit höher ist als 2?
 
 ## Daten als Herausforderung: Aber die Dimensionalität meiner Daten ist viel zu hoch!
-t-sne
 
-## Daten als Herausforderung: Was kann ich jetzt für Schlussfolgerungen ziehen?
+dataset: dmwr / mnist
+https://www.analyticsvidhya.com/blog/2017/01/t-sne-implementation-r-python/
+
+```{r, echo=FALSE}
+iris_unique <- unique(iris) # Remove duplicates
+iris_matrix <- as.matrix(iris_unique[,1:4])
+set.seed(42) # Set a seed if you want reproducible results
+tsne_out <- Rtsne(iris_matrix) # Run TSNE
+
+# Show the objects in the 2D tsne representation
+plot(tsne_out$Y,col=iris_unique$Species)
+
+# Using a dist object
+tsne_out <- Rtsne(dist(iris_matrix))
+plot(tsne_out$Y,col=iris_unique$Species)
+```
 
 ## Daten als Chance: 
 
 ## 
 
 ## Literatur
-Visualisierung: Chambers, Tufte
+Visualisierung: Chambers, Tufte 
+https://www.inf.ed.ac.uk/teaching/courses/pi/2016_2017/phil/tufte-powerpoint.pdf
+
+http://charliepark.org/slopegraphs/
+
+https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR&topic_id=1
+
+
+New Statistics, Lakens
+
+
+https://github.com/stephlocke/datasauRus/
+https://www.autodeskresearch.com/publications/samestats
 
