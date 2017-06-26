@@ -10,7 +10,11 @@ library(dplyr)
 library(datasauRus)
 library(ggthemes)
 library(ggExtra)
+library(ggfortify)
+library(forecast)
 data("algae", package="DMwR2")
+data("AirPassengers")
+data("Default", package = "ISLR")
 
 ```
 
@@ -236,7 +240,43 @@ tsne_out <- Rtsne(dist(iris_matrix))
 plot(tsne_out$Y,col=iris_unique$Species)
 ```
 
-## Daten als Chance: 
+# Teil 2: Daten als Chance
+
+Nachdem wir jetzt das nötige Rüstzeug haben, was der Dschungel an Schätzen für uns bereithält.
+Was für Erkenntnisse können wir aus den Daten ziehen, was für Methoden setzen wir ein?
+Was wir einsetzen, hängt von unserer Fragestellung und der Art der Daten ab.
+Haben wir gewohnte, strukturierte Daten wie Verkaufszahlen, Ausgaben, Kundendaten, Business-Metriken o.ä., befinden wir uns im Bereich klassischer Methoden wie Regression, Decision Trees, Clusteranalyse etc. Ob man das eher _Data Science_ nennt, _Machine Learning_, _Data Mining_ oder _Advanced Analytics_, ist eine Frage der Vorlieben, der Richtung, aus der man kommt, oder des Umfelds, in dem man arbeitet - die Algorithmen dahinter sind dieselben. Auch die Übergänge zur Statistik sind fliessend. (Nicht umsonst wird im Literaturteil insbesondere ein Buch mit dem Titel "Introduction to Statistical Learning" empfohlen.) Im folgenden werde ich meist von Data Science sprechen.
+
+Wenn also das (selbst unter der "Hype-Bezeichnung" Data Science!) das klassische Vorgehen ist, was ist dann die Alternative? Das ist das sogenannte _Deep Learning_, mit dem in Bereichen wie Bilderkennung, maschinelle Übersetzung oder Robotik zur Zeit jedes Jahr neue Rekorde gebrochen werden. Auch wenn Deep Learning prinzipiell auf "klassische" Daten anwendbar ist, so liegen seine Stärken doch vor allem in Aufgabenstellungen wie den genannten. Deep Learning stellt die gewohnten Denkweisen auf den Kopf: Es geht nicht darum, das zu lösen, was für uns Menschen schwer und zeitraubend ist (komplizierte Kalkulationen zum Beispiel), sondern das, was uns leicht fällt: sprechen, verstehen, sehen, gehen. Traditionell sind es genau diese Dinge, die für Maschinen schwer sind - das ist es, was sich mit Deep Learning nun zunehmend ändert.
+Aber bevor wir uns Deep Learning genauer anschauen, wollen wir sehen: Was geht mit, bzw. wozu hilft uns _Data Science_?
+
+## Daten als Chance: Vorhersagen und Erklären
+
+Schauen wir auf Abb. TBD. Links sehen ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
+Hier ist das Ziel ganz klar: Wir möchten eine möglichst korrekte Vorhersage! Damit haben wir ein ganz einfaches Entscheidungskriterium, welche Methode wir wählen sollen: Wir wählen den, der die beste Vorhersage liefert! (Was die beste Vorhersage ist und wie man sie findet, ist dagegen ganz und gar nicht trivial. Um dieses Thema wird es im nächsten Abschnitt gehen.).
+Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwendete Methode zur isolierten Betrachtung einzelner Zeitreihen. Selbst wenn man sich am Ende für einen anderen Algorithmus entscheiden sollte, ist ARIMA immer eine gute Wahl für eine exzellente Baseline. Für das Thema Zeitreihen sei nun auf den Literaturteil verwiesen, da wir hier nicht speziell auf dieses komplexe und faszinierende Thema eingehen können.
+
+
+```{r, echo=FALSE}
+g1 <- autoplot(AirPassengers)
+fit <- auto.arima(AirPassengers)
+g2 <- autoplot(forecast(fit))
+grid.arrange(g1,g2, ncol=2)
+```
+
+
+Nehmen wir nun an, wir haben Daten wie die folgenden: Es geht um 
+
+
+```{r, echo=FALSE}
+ames <- read_csv("ames_housing_train.csv")
+#fit <- lm(SalePrice ~GrLivArea + FullBath + TotRmsAbvGrd + GarageYrBlt + GarageCars + GarageArea,
+#          data = ames)
+#summary(fit)
+ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) %>% ggpairs()
+```
+
+
 
 ## 
 
