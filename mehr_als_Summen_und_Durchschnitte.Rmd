@@ -12,6 +12,8 @@ library(ggthemes)
 library(ggExtra)
 library(ggfortify)
 library(forecast)
+library(readr)
+library(GGally)
 data("algae", package="DMwR2")
 data("AirPassengers")
 data("Default", package = "ISLR")
@@ -250,6 +252,15 @@ Haben wir gewohnte, strukturierte Daten wie Verkaufszahlen, Ausgaben, Kundendate
 Wenn also das (selbst unter der "Hype-Bezeichnung" Data Science!) das klassische Vorgehen ist, was ist dann die Alternative? Das ist das sogenannte _Deep Learning_, mit dem in Bereichen wie Bilderkennung, maschinelle Übersetzung oder Robotik zur Zeit jedes Jahr neue Rekorde gebrochen werden. Auch wenn Deep Learning prinzipiell auf "klassische" Daten anwendbar ist, so liegen seine Stärken doch vor allem in Aufgabenstellungen wie den genannten. Deep Learning stellt die gewohnten Denkweisen auf den Kopf: Es geht nicht darum, das zu lösen, was für uns Menschen schwer und zeitraubend ist (komplizierte Kalkulationen zum Beispiel), sondern das, was uns leicht fällt: sprechen, verstehen, sehen, gehen. Traditionell sind es genau diese Dinge, die für Maschinen schwer sind - das ist es, was sich mit Deep Learning nun zunehmend ändert.
 Aber bevor wir uns Deep Learning genauer anschauen, wollen wir sehen: Was geht mit, bzw. wozu hilft uns _Data Science_?
 
+## Daten als Chance: Goodness of fit
+
+Die Diskussion dessen, was wir mit Data Science machen können, wird unter dem Motto _Vorhersagen und Erklären_, oder auch: _Vorhersagen vs. Erklären_, stehen. Um Missverständnisse zu vermeiden, müssen wir eine Sache vorab klären: Wie messe ich, wie gut ein Modell ist?
+Das Allerwichtigste: Immer an neuen Daten; niemals an denen, mit denen ich das Modell gefittet habe.
+Egal, mit welcher Methode ich arbeite: Als erstes teile ich immer die Daten in zwei, ggf. drei, Sets, ein Training Set, ein Validation Set (optional) und ein Test Set.
+Das Training Set benutze ich, um ein Modell zu fitten - sagen wir, ein Modell zur Bestimmung von Kundenzufriedenheit aus Faktoren wie Produktkategorie, Preiskategorie, Schnelligkeit der Lieferung etc. Während des gesamten Model Fittings lasse ich mein Test Set unberührt. Das Test Set verwende ich ausschliesslich, um die Performance des Modells abschliessend zu prüfen.
+Gut - viele Modelle aber haben Parameter, die ich variieren kann (und sollte!), um die bestmöglichen Einstellungen zu finden. Wie kann ich wissen, welches Setting schlussendlich das beste Ergebnis liefern wird, wenn ich das Test Set nicht konsultieren darf?
+
+
 ## Daten als Chance: Vorhersagen und Erklären
 
 Schauen wir auf Abb. TBD. Links sehen ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
@@ -265,20 +276,61 @@ grid.arrange(g1,g2, ncol=2)
 ```
 
 
-Nehmen wir nun an, wir haben Daten wie die folgenden: Es geht um 
+Nehmen wir nun an, wir haben eine Situation wie in A. TBD. Hier geht es darum, den Verkaufspreis von Anwesen aus Variablen wie Wohnraum, Grösse der Garage etc. vorherzusagen. Wie bei den Zeitreihen kann es auch hier einfach das Ziel sein, die bestmögliche Vorhersage zu machen (in diesem Fall, einen optimalen Verkaufspreis zu bestimmen, der weder potentielle Käufer verschreckt noch zu einem Verkauf unter Wert führt).Ich kann aber auch das Ziel haben, etwas über die Welt herauszufinden: In diesem Fall: Was bestimmt eigentlich den Verkaufspreis? Das mag bei der Beschränkung auf Quadratmeterangaben und dergleichen wenig spannend wirken, wird aber schon anders, wenn wir sozioökonomische, geographische, politische Fakten hinzunehmen. Damit hier keine Missverständnisse aufkommen: Natürlich bedeutet der Fokus auf Erklären/Verstehen keinesfalls, dass wir hier notwendig ein wissenschaftliches Interesse verfolgen. Das kann sein, muss aber nicht. Es kann auch einfach darum gehen, durch Abstraktion die Entscheidungsfindung zu erleichtern. 
+Je nachdem, was uns primär interessiert - die Genauigkeit der Vorhersage oder ein erklärendes Modell -, werden wir den Schwerpunkt auf unterschiedliche Methoden legen.
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ames <- read_csv("ames_housing_train.csv")
-#fit <- lm(SalePrice ~GrLivArea + FullBath + TotRmsAbvGrd + GarageYrBlt + GarageCars + GarageArea,
-#          data = ames)
-#summary(fit)
-ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) %>% ggpairs()
+ames_part <- ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) 
+ames_part %>% ggpairs()
 ```
 
 
 
-## 
+## Daten als Chance: Erklären
+
+Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. TBD):
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
+g1 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
+  geom_abline(intercept = fit1$coefficients[1], slope = fit1$coefficients[2]) + 
+  ggtitle(paste0("R squared: ", round(summary(fit1)$r.squared,2), ", beta: ", round(fit1$coefficients[2],2)))
+fit2 <- lm(SalePrice ~ I(GrLivArea^2), data = ames_part)
+g2 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
+  stat_function(fun = function(x) fit2$coefficients[1] + fit2$coefficients[2] * x^2)
+  ggtitle(paste0("R squared: ", round(summary(fit2)$r.squared,2), ", beta: ", round(fit2$coefficients[2],2)))
+grid.arrange(g1,g2, ncol=2)
+
+```
+
+Die Gerade zeigt, was für ein Modell gefittet wurde: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Wie gut passt das Modell? Das ist das Thema der nächsten Sektion. Hier sei nur gesagt, dass das R² aus dem Titel uns sagt, wie gut das Modell auf diese Daten passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt. 
+
+Wenn wir auf Abb TBD schauen, können wir uns fragen, ob hier eine Gerade wirklich am besten die Daten beschreibt. Es sieht aus, als müsste eine Parabel besser passen, oder? Wir können, ohne das lineare Modell zu verlassen, eine Parabel fitten, indem wir die Prädiktor-Variable Wohnfläche quadrieren, wie in Abb TBD geschehen. Optisch sieht das besser aus, der _goodness of fit_ - Wert R² ist aber tatsächlich niedriger.
+
+Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? In wieviele? Hier lassen wir uns vom _goodness of fit_ leiten, wir wählen das Modell, das die beste Vorhersage liefert (was das ist, haben wir noch nicht besprochen, deswegen hier noch einmal der Verweis auf die nächste Sektion).
+
+## Daten als Chance: Vorhersagen
+
+
+
+
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
+g1 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
+  geom_abline(intercept = fit1$coefficients[1], slope = fit1$coefficients[2]) + 
+  ggtitle(paste0("R squared: ", round(summary(fit1)$r.squared,2), ", beta: ", round(fit1$coefficients[2],2)))
+fit2 <- lm(SalePrice ~ TotRmsAbvGrd, data = ames_part)
+g2 <- ggplot(ames, aes(x = TotRmsAbvGrd, y = SalePrice)) + geom_point() + 
+  geom_abline(intercept = fit2$coefficients[1], slope = fit2$coefficients[2]) + 
+  ggtitle(paste0("R squared: ", round(summary(fit2)$r.squared,2), ", beta: ", round(fit2$coefficients[2],2)))
+grid.arrange(g1,g2, ncol=2)
+
+```
 
 ## Literatur
 Visualisierung: Chambers, Tufte 
