@@ -43,7 +43,7 @@ Zum anderen als Chance. Welche Methoden stellen Data Science, Machine Learning, 
 Bevor wir fragen, was Data Science und Artificial Intelligence uns geben können, sollten wir schauen, was wir mitnehmen auf die Reise durch den Dschungel. Das ist v.a. ein Verständnis für die Grundlagen - wie exploriere ich Daten, wie charakterisiere ich sie so präzis wie möglich?
 
 
-## Daten als Herausforderung: Was ist ein gutes Summary?
+## Was ist ein gutes Summary?
 
 Dass Mittelwerte ein fragwürdiges Summary sein können, hat jeder schon einmal gehört. Aber warum eigentlich ist das so bzw. in welchen Fällen?
 Schauen wir uns zunächst einen Fall an, wo es nicht schadet, einen Mittelwert anzugeben: Abb. 1a.
@@ -148,7 +148,7 @@ Womit wir uns hier beschäftigt haben, ist die Aussagekraft und Informationsdich
 Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen. Wer sich hierfür interessiert, dem seien die Bücher von Edward Tufte empfohlen [1]. Ein guter Einstieg ist der Essay über den Cognitive Style of Powerpoint([2]). Wer den zum ersten Mal liest, wird nicht nur seine ggf. präexistenten Bedenken gegen den bullet point style bestätigt finden (von Gewährspersonen wie Richard Feynman!): Das Eindrucksvollste ist, wie absurd die geringe Informationsdichte von typischen Powerpoint-"Tabellen" oder - Diagrammen plötzlich erscheint, wenn man sie mit hoch informativen Grafiken wie sparklines([3]) oder slope graphs([4]) vergleicht.
 
 
-## Daten als Herausforderung: Warum ist die Streuung der Daten wichtig?
+## Warum ist die Streuung der Daten wichtig?
 
 Zurück zu den Kennzahlen. Bisher haben wir nur über Summaries bestehender Daten gesprochen.
 Vielleicht ist das auch genug: Vielleicht möchte ich tatsächlich nur zusammenfassen, wie, unter gegebenen, ganz konkreten Bedingungen, "die Zahlen sich entwickelt haben". Aber oft will ich mehr: in andere Kontexte extrapolieren, zukünftige Werte vorhersagen oder (worum es im zweiten Teil gehen wird!) Zusammenhänge zwischen Variablen finden.
@@ -185,7 +185,7 @@ Damit kann ich für meine Parameterschätzung ein sog. Konfidenzintervall angebe
 Was ich jetzt noch bedenken muss: Ein Konfidenzintervall für einen Parameter ist nicht dasselbe wie ein sog. Vorhersageintervall (_prediction interval_). Das Vorhersageintervall bezieht sich auf eine konkrete Vorhersage für neue Daten, und ist (z.T. erheblich) breiter als das Konfidenzintervall. Wir werden in Teil 2 ein Beispiel sehen.
 
 
-## Daten als Herausforderung: Was charakterisiert eine Beziehung?
+## Was charakterisiert eine Beziehung?
 
 "Die Korrelation zwischen Investition in Onlinemarketing und Produktabsatz beträgt 0.8". Ein hervorragendes Ergebnis, oder? (Der Korrelationskoeffizient liegt zwischen 0 und 1; tatsächlich ist 0.8 eine sehr hohe Korrelation.) Nun ja, vielleicht. Auch hier gilt wieder: Ein Bild sagt mehr als 1000 Kennzahlen.
 Nehmen wir an, ich habe ein bivariates Dataset mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
@@ -223,7 +223,7 @@ grid.arrange(g2,g1, ncol=2)
 
 Diese Form der Visualisierung funktioniert hervorragend für bivariate Daten. Was, wenn die Zahl der interessierenden Varialen weit höher ist als 2?
 
-## Daten als Herausforderung: Aber die Dimensionalität meiner Daten ist viel zu hoch!
+## Aber die Dimensionalität meiner Daten ist viel zu hoch!
 
 dataset: dmwr / mnist
 https://www.analyticsvidhya.com/blog/2017/01/t-sne-implementation-r-python/
@@ -250,21 +250,27 @@ Was wir einsetzen, hängt von unserer Fragestellung und der Art der Daten ab.
 Haben wir gewohnte, strukturierte Daten wie Verkaufszahlen, Ausgaben, Kundendaten, Business-Metriken o.ä., befinden wir uns im Bereich klassischer Methoden wie Regression, Decision Trees, Clusteranalyse etc. Ob man das eher _Data Science_ nennt, _Machine Learning_, _Data Mining_ oder _Advanced Analytics_, ist eine Frage der Vorlieben, der Richtung, aus der man kommt, oder des Umfelds, in dem man arbeitet - die Algorithmen dahinter sind dieselben. Auch die Übergänge zur Statistik sind fliessend. (Nicht umsonst wird im Literaturteil insbesondere ein Buch mit dem Titel "Introduction to Statistical Learning" empfohlen.) Im folgenden werde ich meist von Data Science sprechen.
 
 Wenn also das (selbst unter der "Hype-Bezeichnung" Data Science!) das klassische Vorgehen ist, was ist dann die Alternative? Das ist das sogenannte _Deep Learning_, mit dem in Bereichen wie Bilderkennung, maschinelle Übersetzung oder Robotik zur Zeit jedes Jahr neue Rekorde gebrochen werden. Auch wenn Deep Learning prinzipiell auf "klassische" Daten anwendbar ist, so liegen seine Stärken doch vor allem in Aufgabenstellungen wie den genannten. Deep Learning stellt die gewohnten Denkweisen auf den Kopf: Es geht nicht darum, das zu lösen, was für uns Menschen schwer und zeitraubend ist (komplizierte Kalkulationen zum Beispiel), sondern das, was uns leicht fällt: sprechen, verstehen, sehen, gehen. Traditionell sind es genau diese Dinge, die für Maschinen schwer sind - das ist es, was sich mit Deep Learning nun zunehmend ändert.
-Aber bevor wir uns Deep Learning genauer anschauen, wollen wir sehen: Was geht mit, bzw. wozu hilft uns _Data Science_?
+Aber bevor wir uns Deep Learning genauer anschauen, wollen wir sehen: Was geht mit, wozu hilft uns und wie macht man _Data Science_?
 
-## Daten als Chance: Goodness of fit
+## Goodness of fit
 
 Die Diskussion dessen, was wir mit Data Science machen können, wird unter dem Motto _Vorhersagen und Erklären_, oder auch: _Vorhersagen vs. Erklären_, stehen. Um Missverständnisse zu vermeiden, müssen wir eine Sache vorab klären: Wie messe ich, wie gut ein Modell ist?
 Das Allerwichtigste: Immer an neuen Daten; niemals an denen, mit denen ich das Modell gefittet habe.
 Egal, mit welcher Methode ich arbeite: Als erstes teile ich immer die Daten in zwei, ggf. drei, Sets, ein Training Set, ein Validation Set (optional) und ein Test Set.
 Das Training Set benutze ich, um ein Modell zu fitten - sagen wir, ein Modell zur Bestimmung von Kundenzufriedenheit aus Faktoren wie Produktkategorie, Preiskategorie, Schnelligkeit der Lieferung etc. Während des gesamten Model Fittings lasse ich mein Test Set unberührt. Das Test Set verwende ich ausschliesslich, um die Performance des Modells abschliessend zu prüfen.
 Gut - viele Modelle aber haben Parameter, die ich variieren kann (und sollte!), um die bestmöglichen Einstellungen zu finden. Wie kann ich wissen, welches Setting schlussendlich das beste Ergebnis liefern wird, wenn ich das Test Set nicht konsultieren darf?
+Zu diesem Zweck habe ich möglicherweise das Validation Set. In diesem Fall würde ich das Validation Set benutzen, um die Performance unter verschiedenen Permutationen von Parameter Settings zu testen.
+Häufiger ist der Einsatz von Kreuzvalidierung (_cross validation_). Bei der Kreuzvalidierung benutze ich das Training Set, um die besten Settings zu bestimmen. Das geht so: Ich unterteile das Training Set in _n_ Subsets (meist 5 oder 10). Nehmen wir 5 als Beispiel. Jetzt iteriere ich über die Subsets, und zwar so. Im ersten Schritt nehme ich die Subsets 1 bis 4, lege sie zusammen und trainiere auf dieser Datenbasis meine verschiedenen Modelle. (Der Einfachheit halber spreche ich hier von "Modellen", es kann sich aber durchaus um ein und denselben Algorithmus handeln, jeweils mit verschiedenen Parameter Settings.) Die Performance dieser Modelle teste ich nun am fürs Fitten nicht benutzten Subset, Subset 5. Dann wiederhole ich den Vorgang mit Subsets 2-5 fürs Fitten und Subset 1 zum Testen; Subsets 3,4,5,1 fürs Fitten und Subset 2 zum Testen; und so weiter, bis ich jedes Subset einmal zum Testen verwendet habe. Die Ergebnisse für die verschiedenen Modelle werden gemittelt, und ich habe eine valide Entscheidungsgrundlage für die Modellauswahl. Die Performance auf dem Test Set wird dann separat bestimmt.
+Wie funktioniert die Trennung in Training Set und Test Set? Im Normalfall einfach als Zufallsauswahl.
+Anders verhält es sich bei Zeitreihen, also Daten, die intrinsisch zeitlich geordnet sind. Hier würde man jeweils zusammenhängende Zeiträume für das Training Set und für das Test Set wählen.
+Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Dataset gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
+Jetzt aber schauen wir erst einmal, was es mit dem Gegensatz _Vorhersagen vs. Erklären_ auf sich hat.
+.
 
+## Vorhersagen vs. Erklären
 
-## Daten als Chance: Vorhersagen und Erklären
-
-Schauen wir auf Abb. TBD. Links sehen ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
-Hier ist das Ziel ganz klar: Wir möchten eine möglichst korrekte Vorhersage! Damit haben wir ein ganz einfaches Entscheidungskriterium, welche Methode wir wählen sollen: Wir wählen den, der die beste Vorhersage liefert! (Was die beste Vorhersage ist und wie man sie findet, ist dagegen ganz und gar nicht trivial. Um dieses Thema wird es im nächsten Abschnitt gehen.).
+Schauen wir auf Abb. TBD. Links sehen wir ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
+Hier ist das Ziel ganz klar: Wir möchten eine möglichst korrekte Vorhersage! Damit haben wir ein ganz einfaches Entscheidungskriterium, welche Methode wir wählen sollen: Wir wählen die, die die beste Vorhersage liefert! (Für die Bestimmung der "besten Vorhersage" gilt, wie gerade besprochen: Model Fitting am Training Set und abschliessende Beurteilung am Test Set.).
 Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwendete Methode zur isolierten Betrachtung einzelner Zeitreihen. Selbst wenn man sich am Ende für einen anderen Algorithmus entscheiden sollte, ist ARIMA immer eine gute Wahl für eine exzellente Baseline. Für das Thema Zeitreihen sei nun auf den Literaturteil verwiesen, da wir hier nicht speziell auf dieses komplexe und faszinierende Thema eingehen können.
 
 
@@ -276,19 +282,19 @@ grid.arrange(g1,g2, ncol=2)
 ```
 
 
-Nehmen wir nun an, wir haben eine Situation wie in A. TBD. Hier geht es darum, den Verkaufspreis von Anwesen aus Variablen wie Wohnraum, Grösse der Garage etc. vorherzusagen. Wie bei den Zeitreihen kann es auch hier einfach das Ziel sein, die bestmögliche Vorhersage zu machen (in diesem Fall, einen optimalen Verkaufspreis zu bestimmen, der weder potentielle Käufer verschreckt noch zu einem Verkauf unter Wert führt).Ich kann aber auch das Ziel haben, etwas über die Welt herauszufinden: In diesem Fall: Was bestimmt eigentlich den Verkaufspreis? Das mag bei der Beschränkung auf Quadratmeterangaben und dergleichen wenig spannend wirken, wird aber schon anders, wenn wir sozioökonomische, geographische, politische Fakten hinzunehmen. Damit hier keine Missverständnisse aufkommen: Natürlich bedeutet der Fokus auf Erklären/Verstehen keinesfalls, dass wir hier notwendig ein wissenschaftliches Interesse verfolgen. Das kann sein, muss aber nicht. Es kann auch einfach darum gehen, durch Abstraktion die Entscheidungsfindung zu erleichtern. 
+Nehmen wir nun an, wir haben eine Situation wie in A. TBD. Hier geht es darum, den Verkaufspreis eines Anwesens aus Variablen wie Wohnraum, Grösse der Garage etc. vorherzusagen. Wie bei den Zeitreihen kann es auch hier einfach das Ziel sein, die bestmögliche Vorhersage zu machen (in diesem Fall, einen optimalen Verkaufspreis zu bestimmen, der weder potentielle Käufer verschreckt noch zu einem Verkauf unter Wert führt).Ich kann aber auch das Ziel haben, etwas über die Welt herauszufinden: In diesem Fall: Was bestimmt eigentlich den Verkaufspreis? Das mag bei der Beschränkung auf Quadratmeterangaben und dergleichen wenig spannend wirken, wird aber schon anders, wenn wir sozioökonomische, geographische, politische Fakten hinzunehmen. Damit hier keine Missverständnisse aufkommen: Natürlich bedeutet der Fokus auf Erklären/Verstehen keinesfalls, dass wir hier notwendig ein wissenschaftliches Interesse verfolgen. Das kann sein, muss aber nicht. Es kann auch einfach darum gehen, durch Abstraktion die Entscheidungsfindung zu erleichtern. 
 Je nachdem, was uns primär interessiert - die Genauigkeit der Vorhersage oder ein erklärendes Modell -, werden wir den Schwerpunkt auf unterschiedliche Methoden legen.
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ames <- read_csv("ames_housing_train.csv")
-ames_part <- ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) 
+ames_part <- ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) %>% filter(GrLivArea < 4000) 
 ames_part %>% ggpairs()
 ```
 
 
 
-## Daten als Chance: Erklären
+## Erklären
 
 Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. TBD):
 
@@ -297,40 +303,73 @@ Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausges
 fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
 g1 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
   geom_abline(intercept = fit1$coefficients[1], slope = fit1$coefficients[2]) + 
-  ggtitle(paste0("R squared: ", round(summary(fit1)$r.squared,2), ", beta: ", round(fit1$coefficients[2],2)))
+  ggtitle(paste0("R²: ", round(summary(fit1)$adj.r.squared,3), ", beta: ", round(fit1$coefficients[2],2)))
 fit2 <- lm(SalePrice ~ I(GrLivArea^2), data = ames_part)
 g2 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
-  stat_function(fun = function(x) fit2$coefficients[1] + fit2$coefficients[2] * x^2)
-  ggtitle(paste0("R squared: ", round(summary(fit2)$r.squared,2), ", beta: ", round(fit2$coefficients[2],2)))
+  stat_function(fun = function(x) fit2$coefficients[1] + fit2$coefficients[2] * x^2) +
+  ggtitle(paste0("R²: ", round(summary(fit2)$adj.r.squared,3), ", beta: ", round(fit2$coefficients[2],2)))
 grid.arrange(g1,g2, ncol=2)
 
 ```
 
-Die Gerade zeigt, was für ein Modell gefittet wurde: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Wie gut passt das Modell? Das ist das Thema der nächsten Sektion. Hier sei nur gesagt, dass das R² aus dem Titel uns sagt, wie gut das Modell auf diese Daten passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt. 
+Die Gerade zeigt, was für ein Modell gefittet wurde: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Das R² im Titel sagt uns, wie gut das Modell auf diese Daten (Trainingsdaten! s.o.) passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt.
 
 Wenn wir auf Abb TBD schauen, können wir uns fragen, ob hier eine Gerade wirklich am besten die Daten beschreibt. Es sieht aus, als müsste eine Parabel besser passen, oder? Wir können, ohne das lineare Modell zu verlassen, eine Parabel fitten, indem wir die Prädiktor-Variable Wohnfläche quadrieren, wie in Abb TBD geschehen. Optisch sieht das besser aus, der _goodness of fit_ - Wert R² ist aber tatsächlich niedriger.
 
-Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? In wieviele? Hier lassen wir uns vom _goodness of fit_ leiten, wir wählen das Modell, das die beste Vorhersage liefert (was das ist, haben wir noch nicht besprochen, deswegen hier noch einmal der Verweis auf die nächste Sektion).
-
-## Daten als Chance: Vorhersagen
+Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? In wieviele? Hier lassen wir uns vom _goodness of fit_ leiten, wir wählen das Modell, das in der Kreuzvalidierung die beste Vorhersage liefert.
 
 
-
-
+## Vorhersagen
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
-g1 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
-  geom_abline(intercept = fit1$coefficients[1], slope = fit1$coefficients[2]) + 
-  ggtitle(paste0("R squared: ", round(summary(fit1)$r.squared,2), ", beta: ", round(fit1$coefficients[2],2)))
-fit2 <- lm(SalePrice ~ TotRmsAbvGrd, data = ames_part)
-g2 <- ggplot(ames, aes(x = TotRmsAbvGrd, y = SalePrice)) + geom_point() + 
-  geom_abline(intercept = fit2$coefficients[1], slope = fit2$coefficients[2]) + 
-  ggtitle(paste0("R squared: ", round(summary(fit2)$r.squared,2), ", beta: ", round(fit2$coefficients[2],2)))
-grid.arrange(g1,g2, ncol=2)
-
+fit1 <- lm(SalePrice ~ bs(GrLivArea, knots = c(20000)), data = ames_part)
+preds1 <- predict(fit1, se = T)
+fit2 <- lm(SalePrice ~ bs(GrLivArea, df = 15), data = ames_part)
+preds2 <- predict(fit2, se = T)
+fit3 <- lm(SalePrice ~ bs(GrLivArea, df = 30), data = ames_part)
+preds3 <- predict(fit3, se = T)
+ames_part_pred <- ames_part %>% mutate(pred1 = preds1$fit,
+                                       upper1 = preds1$fit + 2* preds1$se,
+                                       lower1 = preds1$fit - 2* preds1$se,
+                                       pred2 = preds2$fit,
+                                       upper2 = preds2$fit + 2* preds2$se,
+                                       lower2 = preds2$fit - 2* preds2$se,
+                                       pred3 = preds3$fit,
+                                       upper3 = preds3$fit + 2* preds3$se,
+                                       lower3 = preds3$fit - 2* preds3$se
+                                       )
+g1 <- ggplot(ames_part_pred, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
+  geom_line(aes(y = pred1)) + 
+  geom_ribbon(aes(ymin=lower1, ymax=upper1), fill="green", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit1)$r.squared,3)))
+g2 <- ggplot(ames_part_pred, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
+  geom_line(aes(y = pred2)) + 
+  geom_ribbon(aes(ymin=lower2, ymax=upper2), fill="blue", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit2)$r.squared,3)))
+g3 <- ggplot(ames_part_pred, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
+  geom_line(aes(y = pred3)) + 
+  geom_ribbon(aes(ymin=lower3, ymax=upper3), fill="red", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit3)$r.squared,3)))
+grid.arrange(g1,g2,g3, ncol=3)
 ```
+
+tbd 2. beispiel wo nichtlinear mehr bringt!!
+
+
+
+
+## Vorhersagen vs. Erklären, multidimensional
+
+Wir haben 
+
+mutlidim lin reg
+random forests
+
+## Heute noch Magic, morgen Mainstream: Deep Learning
+
+Deep Learning
+
 
 ## Literatur
 Visualisierung: Chambers, Tufte 
