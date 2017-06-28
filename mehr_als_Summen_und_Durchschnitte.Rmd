@@ -14,10 +14,11 @@ library(ggfortify)
 library(forecast)
 library(readr)
 library(GGally)
+library(splines)
 data("algae", package="DMwR2")
 data("AirPassengers")
 data("Default", package = "ISLR")
-
+data("Wage", package = "ISLR")
 ```
 
 
@@ -301,26 +302,39 @@ Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausges
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
-g1 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
-  geom_abline(intercept = fit1$coefficients[1], slope = fit1$coefficients[2]) + 
-  ggtitle(paste0("R²: ", round(summary(fit1)$adj.r.squared,3), ", beta: ", round(fit1$coefficients[2],2)))
+preds1 <- predict(fit1, se = T)
+df <- ames_part %>% mutate(pred1 = preds1$fit,
+                            upper1 = preds1$fit + 2* preds1$se,
+                            lower1 = preds1$fit - 2* preds1$se)
+g1 <- ggplot(df, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
+  geom_line(aes(y = pred1)) + 
+  geom_ribbon(aes(ymin=lower1, ymax=upper1), fill="green", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit1)$r.squared,3), ", beta: ", round(fit1$coefficients[2],2)))
+
 fit2 <- lm(SalePrice ~ I(GrLivArea^2), data = ames_part)
-g2 <- ggplot(ames, aes(x = GrLivArea, y = SalePrice)) + geom_point() + 
-  stat_function(fun = function(x) fit2$coefficients[1] + fit2$coefficients[2] * x^2) +
-  ggtitle(paste0("R²: ", round(summary(fit2)$adj.r.squared,3), ", beta: ", round(fit2$coefficients[2],2)))
+preds2 <- predict(fit2, se = T)
+df <- ames_part %>% mutate(pred2 = preds2$fit,
+                            upper2 = preds2$fit + 2* preds2$se,
+                            lower2 = preds2$fit - 2* preds2$se)
+g2 <- ggplot(df, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
+  geom_line(aes(y = pred2)) + 
+  geom_ribbon(aes(ymin=lower2, ymax=upper2), fill="green", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit2)$r.squared,3), ", beta: ", round(fit2$coefficients[2],2)))
 grid.arrange(g1,g2, ncol=2)
 
 ```
 
-Die Gerade zeigt, was für ein Modell gefittet wurde: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Das R² im Titel sagt uns, wie gut das Modell auf diese Daten (Trainingsdaten! s.o.) passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt.
+Hier wurde eine einfache lineare Regression des Verkaufspreises auf die Wohnfläche gerechnet. Die Gerade zeigt das gefittete Modell: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Das R² im Titel sagt uns, wie gut das Modell auf diese Daten (Trainingsdaten! s.o.) passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt.
 
 Wenn wir auf Abb TBD schauen, können wir uns fragen, ob hier eine Gerade wirklich am besten die Daten beschreibt. Es sieht aus, als müsste eine Parabel besser passen, oder? Wir können, ohne das lineare Modell zu verlassen, eine Parabel fitten, indem wir die Prädiktor-Variable Wohnfläche quadrieren, wie in Abb TBD geschehen. Optisch sieht das besser aus, der _goodness of fit_ - Wert R² ist aber tatsächlich niedriger.
 
-Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? In wieviele? Hier lassen wir uns vom _goodness of fit_ leiten, wir wählen das Modell, das in der Kreuzvalidierung die beste Vorhersage liefert.
+Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? 
 
 
 ## Vorhersagen
 
+Wenn wir denken, der zu beschreibende Zusammenhang ist intrinsisch nichtlinear, macht es Sinn, die Grenzen des verwendeten Frameworks zu erweitern. Wir können viele lokale Regressionen rechnen (die ihrerseits noch linear sind), oder wir wählen direkt nichtlineare Methoden wie Regression Splines.
+In Abb. TBD wurden drei Regression Splines gefittet, die sich durch ihren Grad an Flexibilität unterscheiden:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 fit1 <- lm(SalePrice ~ bs(GrLivArea, knots = c(20000)), data = ames_part)
@@ -354,17 +368,56 @@ g3 <- ggplot(ames_part_pred, aes(x = GrLivArea, y = SalePrice)) + geom_point() +
 grid.arrange(g1,g2,g3, ncol=3)
 ```
 
-tbd 2. beispiel wo nichtlinear mehr bringt!!
+Wir sehen, dass mit zunehmender Flexibilität der _Goodness of fit_ auf den _Trainingsdaten_ zunimmt.
+Wie immer ist aber der Fit auf den Testdaten, worauf es ankommt. Nehmen wir einmal an, das Modell in der Mitte hätte sich in der Kreuzvalidierung als das beste erwiesen (weshalb wir davon ausgehen, dass es auch für die Testdaten die beste Performance zeigen wird).  Dann ist die Frage: Ist uns der verbesserte Fit gegenüber der linearen Regression wichtig genug, um auf den explanatorischen Wert der Regression zu verzichten?
+
+In diesem Beispiel ist der Performancegewinn wahrscheinlich nicht deutlich genug, als dass wir uns diese Frage wirklich stellen würden - der Zusammenhang ist offenbar "linear genug" für lineare Regression. Was, wenn die wahren Daten definitiv nichtlinear sind?
+Abb. TBD zeigt ein solches Beispiel. Nehmen wir wieder an, wir sähen jeweils pro Modell den besten Fit, ermittelt durch 10-fache Kreuzvalidierung - links für lineare Regression, rechts für die Familie der Regression Splines. Für welches Modell entscheide ich mich? Die Zahlen sind eine Sache; jetzt kommt es darauf an, welches Ziel ich mit der Analyse verfolge.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+set.seed(7777)
+x <- seq(from = 1, to = 3, by = 0.1)
+x <- sample(x, 200, replace = TRUE)
+f <- function(x) x^3 - 3*x^2 + 2*x
+y <- exp(x) + rnorm(100, sd = 3)
+df <- data_frame(x,y)
+ggplot(df, aes(x,y)) + geom_point()
+fit0 <- lm(y ~ x, data = df)
+preds0 <- predict(fit0, se = T)
+df <- df %>% mutate(pred0 = preds0$fit,
+                                       upper0 = preds0$fit + 2* preds0$se,
+                                       lower0 = preds0$fit - 2* preds0$se)
+g0 <- ggplot(df, aes(x = x, y = y)) + geom_point() +
+  geom_line(aes(y = pred0)) + 
+  geom_ribbon(aes(ymin=lower0, ymax=upper0), fill="green", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit0)$r.squared,3)))
+                 
+fit1 <- lm(y ~ ns(x, df=6), data = df)
+preds1 <- predict(fit1, se = T)
+df <- df %>% mutate(pred1 = preds1$fit,
+                                       upper1 = preds1$fit + 2* preds1$se,
+                                       lower1 = preds1$fit - 2* preds1$se)
+g1 <- ggplot(df, aes(x = x, y = y)) + geom_point() +
+  geom_line(aes(y = pred1)) + 
+  geom_ribbon(aes(ymin=lower1, ymax=upper1), fill="blue", alpha=0.2) +
+  ggtitle(paste0("R²: ", round(summary(fit1)$r.squared,3)))
+grid.arrange(g0,g1, ncol=2)
+```
 
 
+## Modellselektion
+
+Im vorangehenden Abschnitt haben wir nur jeweils einen einzigen Prädiktor betrachtet.
+In der Regel aber wird mein Dataset aber mehrere potentielle Prädiktoren enthalten - in der Zeit von Big Data ggf. extrem viele! Wie wähle ich die wichtigsten aus?
+Hier wird der Gegensatz zwischen Erklären und Vorhersagen vielleicht noch augenfälliger.
+Das gleiche gilt für die Notwendigkeit, die finale Performance auf dem Test Set zu evaluieren.
+Wenn ich nur genügend Prädiktoren habe, kann ich alle Daten perfekt fitten. Ganz nach dem berühmten John-von-Neumann-Zitat
+
+>> With four parameters I can fit an elephant, and with five I can make him wiggle his trunk.
+
+decision tree!!!
 
 
-## Vorhersagen vs. Erklären, multidimensional
-
-Wir haben 
-
-mutlidim lin reg
-random forests
 
 ## Heute noch Magic, morgen Mainstream: Deep Learning
 
