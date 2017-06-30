@@ -1,9 +1,12 @@
 ---
-title: "Mehrals"
+title: "Mehr als Summen und Durchschnitte: Data Science von Statistik bis Deep Learning"
 output: html_document
+html_document: 
+    fig_caption: yes
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
 library(ggplot2)
 library(gridExtra)
 library(dplyr)
@@ -15,28 +18,34 @@ library(forecast)
 library(readr)
 library(GGally)
 library(splines)
+library(Rtsne)
 data("algae", package="DMwR2")
 data("AirPassengers")
 data("Default", package = "ISLR")
+
+
+opts_chunk$set(cache=TRUE)
 ```
 
 
 ## Daten
 
-Daten sind gut. Sie liefern uns Informationen, wieviele Einheiten wir verkauft haben; wie unser Umsatz war; wie es mit der Zufriedenheit unserer Kunden aussieht. Welche Werbebanner am meisten geklickt wurden. Welche unserer Strategien am besten funktioniert hat. Woraus wir unsererseits folgern können, wie wir jetzt am besten weiter vorgehen. Daten, konvertiert in Erkenntnisgewinn - und finanziellen Gewinn.
+Daten sind gut. Sie liefern uns Informationen, wieviele Einheiten wir verkauft haben; wie unser Umsatz war; wie es mit der Zufriedenheit unserer Kunden aussieht. Welche Werbebanner am meisten geklickt wurden. Welche unserer Strategien am besten funktioniert hat. Woraus wir unsererseits folgern können, wie wir jetzt am besten weiter vorgehen. Daten, konvertiert in Erkenntnisgewinn - und in finanziellen Gewinn.
 
 Daten sind schlecht. Daten sind "zuviel", um mit dem menschlichen Auge erfasst werden zu können. Wir müssen sie irgendwie zusammenfassen, vereinfachen. Wieviel Vereinfachung ist ausreichend? Einen Schritt zurück: Was überhaupt ist eine sinnvolle Vereinfachung, ein angemessenes "summary" unserer Daten? Wie aussagekräftig ist der Mittelwert, den ich in den meisten Reports angezeigt bekomme?
 
-Daten sind Vergangenheit, _in the past_. Vergangene Aktienkurse; vergangene Verkaufszahlen; vergangene Adclicks. Interessiert mich der Schnee von gestern? Ja - weil ich auf den Schnee von morgen schliessen möchte! Wie kann ich das machen? Wie kann ich die in den Daten enthaltene Information optimal nutzen und die relevanten Variablen "herausfischen"? Hier ist das Business-Know-How wichtig - aber nicht alles. Methoden aus Data Science, Machine Learning und Statistik warten nur darauf, mich zu unterstützen.
+Daten sind Vergangenheit, _in the past_. Vergangene Aktienkurse; vergangene Verkaufszahlen; vergangene Adclicks. Interessiert mich der Schnee von gestern? Ja - weil ich auf den Schnee von morgen schliessen möchte! Wie kann ich das machen? Wie kann ich die in den Daten enthaltene Information optimal nutzen und die relevanten Variablen "herausfischen"? Hier ist das Business-Know-How wichtig - aber nicht alles. Methoden aus Data Science, Machine Learning und Statistik warten nur darauf, uns zu unterstützen.
 
 Und schliesslich gibt es eine Klasse von Daten, die anders sind - scheinbar unstrukturiert; vielschichtig; extrem hochauflösend und überwältigend schon aufgrund ihrer Quantität. Für uns Menschen ist es selbstverständlich, dass wir Sprache verstehen, einen Hund von einer Katze unterscheiden können, dass fahrende Autos anders klingen, wenn es nass als wenn es trocken ist. Auf Pixelebene aber gibt es nichts, was einen Hund zum Hund oder eine Katze zur Katze macht. 
 Diese Daten, diese Aufgabenstellungen sind das Reich von Deep Learning, das mit gar nicht so neuen Konzepten, aber immer ausgefeilteren Algorithmen und viel Rechenpower jeden Monat neue Rekorde zu brechen scheint. Aber das betrifft doch nur "die Grossen" - Google, Facebook, Microsoft, Apple ... oder? Oder ist Deep Learning auch etwas für mich und meine Daten?
 
-## Pfade durch den Jungle
+## Pfade durch den Dschungel
 
-Wenn heute Daten ein Jungle sind, sind Algorithmen es noch mehr. In diesem Artikel wollen wir Pfade durch den Algorithmenjungle ziehen, die Ihnen helfen sollen, die für Ihre Anforderungen und Bedürfnisse relevanten Methoden zu finden.
+Wenn Daten heute ein Dschungel sind, sind Algorithmen es noch mehr. In diesem Artikel wollen wir Pfade durch den Algorithmendschungel ziehen, die Ihnen helfen sollen, die für Ihre Anforderungen und Bedürfnisse relevanten Methoden zu finden.
+
 Daten werden dabei für uns vor allem in zwei Inkarnationen auftreten: Zum einen als Herausforderung. Hier geht es darum, die übergrosse Datenmenge in den Griff zu bekommen, zu summarisieren, ohne wichtige Features zu übersehen oder zu verfälschen.
-Zum anderen als Chance. Welche Methoden stellen Data Science, Machine Learning, Deep Learning uns zur Verfügung, um Muster in den Daten zu finden und valide Schlussfolgerungen zu ziehen? Dabei geht es nicht um ein Potpourri der Methoden, ein Who's who der Algorithmen mit dem Ziel, alles einmal erwähnt zu haben. Es geht um den Überblick: Wie unterscheiden sich die Herangehensweisen, was sind die Konsequenzen, wenn ich mich für Methode B statt Methode A entscheide? Welches Vorgehen passt zu welchen Daten, zu welchen Fragestellungen? Es geht darum, den Jungle zu "mappen", um das geeignete Vorgehen für den konkreten Anwendungsfall finden zu können.
+
+Zum anderen als Chance. Welche Methoden stellen Data Science, Machine Learning, Deep Learning uns zur Verfügung, um Muster in den Daten zu finden und valide Schlussfolgerungen zu ziehen? Dabei geht es nicht um ein Potpourri der Methoden, ein Who's who der Algorithmen mit dem Ziel, alles einmal erwähnt zu haben. Es geht um den Überblick: Wie unterscheiden sich die Herangehensweisen, was sind die Konsequenzen, wenn ich mich für Methode B statt Methode A entscheide? Welches Vorgehen passt zu welchen Daten, zu welchen Fragestellungen? Es geht darum, den Dschungel zu "mappen", um das geeignete Vorgehen für den konkreten Anwendungsfall finden zu können.
 
 # Teil 1: Daten als Herausforderung
 
@@ -48,20 +57,21 @@ Bevor wir fragen, was Data Science und Artificial Intelligence uns geben können
 Dass Mittelwerte ein fragwürdiges Summary sein können, hat jeder schon einmal gehört. Aber warum eigentlich ist das so bzw. in welchen Fällen?
 Schauen wir uns zunächst einen Fall an, wo es nicht schadet, einen Mittelwert anzugeben: Abb. 1a.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 1. 1a.: In etwa normalverteilte Daten - Mittelwert und Median liegen dicht beieinander. 1b.: Stark schiefe Daten; der Mittelwert ist weit nach rechts gezogen."}
 g1 <- ggplot(algae, aes(x = mxPH)) + geom_density(na.rm = TRUE) + 
   geom_vline(aes(xintercept = mean(algae$mxPH, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(algae$mxPH, na.rm = TRUE), linetype = "Median"), color = 'green') + 
-  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+  scale_linetype_manual(name = "Statistik", values = c(2, 2), 
                       guide = guide_legend(override.aes = list(color = c("green", "red")))) +
- xlab("") + ylab("Dichte") + theme(legend.position="bottom")
+ xlab("") + ylab("Dichte") + theme(legend.position="bottom") + 
+  ggtitle("Dataset A")
 
 g2 <- ggplot(algae, aes(x = a1)) + geom_density(na.rm = TRUE) + 
   geom_vline(aes(xintercept = mean(algae$a1, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(algae$a1, na.rm = TRUE), linetype = "Median"), color = 'green') + 
-  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+  scale_linetype_manual(name = "Statistik", values = c(2, 2), 
   guide = guide_legend(override.aes = list(color = c("green", "red")))) +
-  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + ggtitle("Dataset A")
+  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + ggtitle("Dataset B")
 
 grid.arrange(g1, g2, ncol = 2)
 ```
@@ -71,20 +81,20 @@ Der Mittelwert liegt tatsächlich mittig in der Verteilung, direkt neben dem Med
 
 ### Der Median
 
-Wie kann es aber ausschauen, wenn die Daten weniger "schön normalverteilt" sind? Ein Beispiel sehen wir in Abb. 1b. Während der Median das Gros der Daten, das nahe 0 liegt, gut beschreibt, ist der Mittelwert weit nach rechts verschoben. Warum? Beim Median kommt es allein auf die Ordnung der Werte an, die Abstände sind unerheblich. Beim Mittelwert gehen die Abstände direkt in die Berechnung ein. Krasses Beispiel: Der Median der Liste (1,2,3,4,1000) ist 3, der Mittelwert aber 202!
+Wie kann es aber ausschauen, wenn die Daten weniger "schön normalverteilt" sind? Ein Beispiel sehen wir in Abb. 1b. Während der Median das Gros der Daten, das nahe 0 liegt, gut beschreibt, ist der Mittelwert weit nach rechts verschoben. Warum? Beim Median kommt es allein auf die Ordnung der Werte an, die Abstände sind unerheblich. Beim Mittelwert gehen die Abstände direkt in die Berechnung ein. Krasses Beispiel: Der Median der Wertreihe (1,2,3,4,1000) ist 3, der Mittelwert aber 202!
 
 Insofern ist der Median, wenn es um knappe Charakterisierung der Daten geht, schon einmal ein besserer Kandidat als der Mittelwert. Für wirklich wichtige Daten und wenn ich den Platz habe, ersetzt aber nichts die Darstellung der gesamten Verteilung. 
 
-Wie aussagekräftig ist z.B. der Median, wenn ich Daten habe wie in Abb. 2?
+Wie aussagekräftig ist z.B. der Median, wenn ich Daten habe wie in Abb. 2? Hier liegen die meisten Daten eben gerade nicht in der Mitte, sondern an den Enden der Verteilung...
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Abb. 2. Ein bimodales Dataset."}
 betas <- rbeta(100,.5,.5)
 ggplot(data.frame(x=betas), aes(x = x)) + geom_histogram(bins = 20) +
   geom_vline(aes(xintercept = mean(x), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(x), linetype = "Median"), color = 'green') + 
-  scale_linetype_manual(name = "Mass", values = c(2, 2), 
+  scale_linetype_manual(name = "Statistik", values = c(2, 2), 
                       guide = guide_legend(override.aes = list(color = c("red", "green")))) +
-  ylab("Anzahl") + ggtitle("Dataset B")
+  ylab("Anzahl") + ggtitle("Dataset C")
 
   
 ```
@@ -92,43 +102,50 @@ ggplot(data.frame(x=betas), aes(x = x)) + geom_histogram(bins = 20) +
 
 ### Boxplots
 
-Eine beliebte klassische Methode, eine ganze Verteilung zu visualisieren, statt sie auf eine einzige Zahl zu reduzieren, ist - seit langem - das Boxplot (Abb. TBD). Für den Fall in Abb. TBD funktioniert das auch ziemlich gut: Wir sehen zum einen den Median (dicke horizontale Linie) und die für den Namen verantwortliche Box. In der Box liegen alle Werte zwischen dem 25. und dem 75. Perzentil. (Kurz zur Terminologie: Das n-te Perzentil, oder auch 0.n Quantil, ist der Wert, unterhalb dessen in der Verteilung n Prozent der Werte liegen. Der Median ist also auch das 50. Perzentil oder 0.5 Quantil. Häufig trifft man auch auf die Bezeichnung Quartil; das 1. Quartil ist dann gleich dem 25. Perzentil, das 3 . Quartil gleich dem 75. Perzentil.) Die vertikalen Linien ("Barthaare") haben mit dem sog. inter quartile range (IQR) zu tun. Der IQR ist der Abstand zwischen dem 1. und dem 3. Quartil. Das obere Barthaar reicht dann bis zu dem grössten Wert, der nicht mehr als 1.5 mal IQR von der oberen Boxgrenze entfernt ist; das untere entsprechend bis zum kleinsten Wert, dessen Entfernung zur unteren Boxgrenze nicht mehr als 1.5 mal IQR beträgt. Werte, die dann noch ausserhalb liegen, sind als Punkte eingezeichnet und werden oft als Outlier gesehen.
-Was zeigt uns nun das Boxplot in Abb. TBD? Man sieht unmittelbar, dass das obere Rechteck viel höher ist als das untere: Das heisst, zwischen dem 25. Perzentil und dem Median liegen die Daten sehr eng zusammen; zwischem dem Median und dem 75. Perzentil liegen sie weiter gestreut. Dasselbe Bild zeigen uns die "Barthaare": die obere Linie reicht sehr weit nach oben, während die untere direkt bei 0 trunkiert wird. Nicht zufällig sind, was hier dargestellt wird, dieselben Daten wie in Abb. TBD. Wir können die Aussagekraft des Boxplots noch steigern, indem wir, wie in Abb. TBD geschehen, Mittelwert und Modus (den häufigsten Wert der Verteilung, in diesem Fall 0) hinzufügen.
+Eine beliebte klassische Methode, eine ganze Verteilung zu visualisieren, statt sie auf eine einzige Zahl zu reduzieren, ist - seit langem - das Boxplot (Abb. 3a.). Für den Fall in Abb. 3 funktioniert das auch ziemlich gut: Wir sehen zum einen den Median (dicke horizontale Linie) und die für den Namen verantwortliche Box. In der Box liegen alle Werte zwischen dem 25. und dem 75. Perzentil.
+(Kurz zur Terminologie: Das n-te Perzentil ist der Wert, unterhalb dessen in der Verteilung n Prozent der Werte liegen. Der Median ist also gleichzeitig das 50. Perzentil. Häufig trifft man auch auf die Bezeichnung Quartil; das 1. Quartil ist dann gleich dem 25. Perzentil, das 3 . Quartil gleich dem 75. Perzentil.)
+
+Die vertikalen Linien ("Barthaare") haben mit dem sog. _inter quartile range_ (IQR) zu tun. Der IQR ist der Abstand zwischen dem 1. und dem 3. Quartil. Das obere Barthaar reicht dann bis zu dem grössten Wert, der nicht mehr als 1.5 * IQR von der oberen Boxgrenze entfernt ist; das untere entsprechend bis zum kleinsten Wert, dessen Entfernung zur unteren Boxgrenze nicht mehr als 1.5 * IQR beträgt. Werte, die dann noch ausserhalb liegen, sind als Punkte eingezeichnet und werden oft als Outlier gesehen.
+
+Was zeigt uns nun das Boxplot in Abb. 3a? Man sieht unmittelbar, dass das obere Rechteck viel höher ist als das untere: Das heisst, zwischen dem 25. Perzentil und dem Median liegen die Daten sehr eng zusammen; zwischem dem Median und dem 75. Perzentil liegen sie weiter gestreut. Dasselbe Bild zeigen uns die "Barthaare": die obere Linie reicht sehr weit nach oben, während die untere sehr schnell bei 0 trunkiert wird. Nicht zufällig sind, was hier dargestellt wird, dieselben Daten wie in Abb. 1b.
+Wir können die Aussagekraft des Boxplots noch steigern, indem wir, wie in Abb. 3b geschehen, Mittelwert und Modus (den häufigsten Wert der Verteilung, in diesem Fall 0) hinzufügen.
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 3. Charakterisierung einer ganzen Verteilung durch ein Boxplot. 3a.: Die rechtsschiefe Verteilung aus Abb. 1b. 3b.: Dasselbe Boxplot, mit Mittelwert und Modus der Verteilung."}
 g1 <- ggplot(algae, aes(x = 1, y = a1)) + geom_boxplot() + ylab("")
 mod <-algae %>% group_by(a1) %>% summarize(n = n()) %>% arrange(desc(n)) %>% select(a1) %>% head(1)
 g2 <- ggplot(algae, aes(x = 1, y = a1))  + geom_boxplot() + 
   geom_hline(aes(yintercept = mean(algae$a1)), color = "green", linetype=2) + 
   geom_hline(aes(yintercept = mod), color = "blue", linetype=4)  + 
   ylab("")
-grid.arrange(g1, g2, ncol= 2, top = "Dataset A")
+grid.arrange(g1, g2, ncol= 2, top = "Dataset B")
 ```
 
-### Violin plots
+### _Violin plots_
 
-Wie hilfreich ist ein Boxplot für die Daten in abb. TBD? Abb. TBD zeigt es: Man sieht nicht ohne weiteres, dass hier eine bimodale Verteilung, mit den Modi an den beiden Enden, vorliegt. Das TBD an der y -Achse, um das wir das Boxplot ergänzt haben, ist da schon hilfreicher. Warum dann aber nicht gleich die ganze Verteilung zeigen, wenn das genauso viel Platz braucht? Abb. TBD zeigt ein sog. violin plot, nichts anderes als eine rotierte und gespiegelte Dichtekurve. Hier sieht man sofort, was los ist!
+Wie hilfreich ist ein Boxplot für die Daten aus Abb. 2? Abb. 4a zeigt es: Man sieht nicht ohne weiteres, dass hier eine bimodale Verteilung, mit der grössten Dichte jeweils an den Enden, vorliegt.
+
+Um nachzuhelfen, haben wir das Boxplot entlang der y-Achse um Strichmuster ergänzt, die die Dichte präziser widerspiegeln. Warum dann aber nicht gleich die ganze Verteilung zeigen, wenn wir dafür genauso viel Platz brauchen wie für das Boxplot? Abb. 4b zeigt ein sog. _violin plot_, nichts anderes als eine rotierte und gespiegelte Dichtekurve. Hier sieht man sofort, was los ist!
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 4: Boxplot vs. violin plot für das bimodale Dataset. 4a.: Boxplot. 4b.: violin plot."}
 g1 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_boxplot() + geom_rug() +
   ylab("")
 g2 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_violin() + geom_rug() + ylab("")
 
-grid.arrange(g1, g2, ncol= 2, top = "Dataset B")
+grid.arrange(g1, g2, ncol= 2, top = "Dataset C")
 ```
 
 ### Quantile plots
 
-Auf den ersten Blick weniger leicht zu lesen als violin plots, dafür aber sehr aussagekräftig sind quantile plots. Hier werden die Originaldaten dem Wert nach geordnet und dann gegen ihre Position in der Ordnung, ausgedrückt als Proportion zwischen 0 und 1, geplottet.
+Auf den ersten Blick weniger leicht zu lesen als _violin plots_, dafür aber sehr aussagekräftig sind Quantilplots. Hier werden die Originaldaten dem Wert nach geordnet und dann gegen ihre Position in der Ordnung, ausgedrückt als Proportion zwischen 0 und 1, geplottet.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 5: Quantilplots. 5a.: Quantilplot für das rechtsschiefe Dataset. 5b.: Quantilplot für das bimodale Dataset."}
 sorted <- sort(algae$a1)
 df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
 g1 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
-  ggtitle("Dataset A")
+  ggtitle("Dataset B")
 sorted <- sort(betas)
 df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
 g2 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
@@ -137,15 +154,17 @@ grid.arrange(g1, g2, ncol= 2)
 ```
 
 Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.25, 0.5, 0.75) ablesen.
-Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. TBD und Abb. TBD: Links haben wir Dataset A, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
-Ganz anders Dataset B, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
+
+Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. 5a und Abb. 5b: Links haben wir Dataset B, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
+
+Ganz anders Dataset C, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
 
 ### Informationsdichte und Plot-Design
 
 Womit wir uns hier beschäftigt haben, ist die Aussagekraft und Informationsdichte von Plots und Kennzahlen. Das Wort Informationsdichte kann man aber auch wörtlicher verstehen: Wie lassen sich Plots designen, die den vorhandenen Raum optimal ausnutzen, d.h. bei gegebener räumlicher Beschränkung maximale Information übermitteln?
 
 
-Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen. Wer sich hierfür interessiert, dem seien die Bücher von Edward Tufte empfohlen [1]. Ein guter Einstieg ist der Essay über den Cognitive Style of Powerpoint([2]). Wer den zum ersten Mal liest, wird nicht nur seine ggf. präexistenten Bedenken gegen den bullet point style bestätigt finden (von Gewährspersonen wie Richard Feynman!): Das Eindrucksvollste ist, wie absurd die geringe Informationsdichte von typischen Powerpoint-"Tabellen" oder - Diagrammen plötzlich erscheint, wenn man sie mit hoch informativen Grafiken wie sparklines([3]) oder slope graphs([4]) vergleicht.
+Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte der Visualisierung einzugehen. Wer sich hierfür interessiert, dem seien die Bücher von Edward Tufte empfohlen [1]. Ein guter Einstieg ist der Essay über den _Cognitive Style of Powerpoint_ [2]. Wer den zum ersten Mal liest, wird nicht nur seine ggf. präexistenten Bedenken gegen den _bullet point style_ bestätigt finden (von Gewährspersonen wie Richard Feynman!): Das Eindrucksvollste ist, wie absurd die geringe Informationsdichte von typischen Powerpoint-"Tabellen" oder - Diagrammen plötzlich erscheint, wenn man sie mit hoch informativen Grafiken wie _sparklines_ [3] oder _slope graphs_ [4] vergleicht.
 
 
 ## Warum ist die Streuung der Daten wichtig?
@@ -153,16 +172,19 @@ Leider haben wir hier nicht den Raum, ausführlich auf gestalterische Aspekte de
 Zurück zu den Kennzahlen. Bisher haben wir nur über Summaries bestehender Daten gesprochen.
 Vielleicht ist das auch genug: Vielleicht möchte ich tatsächlich nur zusammenfassen, wie, unter gegebenen, ganz konkreten Bedingungen, "die Zahlen sich entwickelt haben". Aber oft will ich mehr: in andere Kontexte extrapolieren, zukünftige Werte vorhersagen oder (worum es im zweiten Teil gehen wird!) Zusammenhänge zwischen Variablen finden.
 
-Sobald wir verallgemeinern, vorhersagen oder extrapolieren, verlassen wir das Reich der Gewissheiten. Es ist essentiell, dass wir uns über den Unsicherheitsfaktor im klaren sind und ihn quantifizieren können. Die meisten der Methoden, die wir in Teil zwei besprechen werden, kommen bereits mit Massen für die Unsicherheit. Was kann man machen, wenn die Methode kein solches Mass liefert? 
+Sobald wir verallgemeinern, vorhersagen oder extrapolieren, verlassen wir das Reich der Gewissheiten. Es ist essentiell, dass wir uns über den Unschärfefaktor im klaren sind und ihn quantifizieren können. Die meisten der Methoden, die wir in Teil 2 besprechen werden, kommen bereits mit Angaben über die Unschärfe. Was kann man machen, wenn die Methode kein solches Mass liefert? 
 
-Eine universell einsetzbare Methode ist der Bootstrap. Das geht so: Ich möchte die Beziehung zwischen zwei Variablen, sagen wir x und y, "allgemeingültig" charakterisieren, habe aber nur ein fixes Set von Daten. Dieses Dataset ist eine mögliche Stichprobe von Werten aus der Population aller Werte. Nun behandle ich einfach mein Dataset, meine Stichprobe, selber als Population: Ich ziehe wiederholt Stichproben aus der Population und berechne jeweils die Beziehung zwischen x und y. (Die Analogie ist cum grano salis zu nehmen; beim Bootstrap handelt es sich um _sampling mit replacement_, d.h. ein und derselbe Wert darf mehrmals gezogen werden, während das "in der Realität" meist nicht der Fall sein dürfte.) Jetzt habe ich also z.B. 100 Schätzungen meines Kennwertes und berechne die Standardabweichung, die durchschnittliche quadrierte Abweichung der Schätzungen von ihrem Mittelwert.
+Eine universell einsetzbare Methode ist der _Bootstrap_. Das geht so: Ich möchte die Beziehung zwischen zwei Variablen, sagen wir x und y, "allgemeingültig" charakterisieren, habe aber nur ein fixes Set von Daten. Dieses Dataset ist eine mögliche Stichprobe von Werten aus der Population aller Werte. Nun behandle ich einfach mein Dataset, meine Stichprobe, selber als Population: Ich ziehe wiederholt Stichproben aus der Population und berechne jeweils die Beziehung zwischen x und y. (Die Analogie ist _cum grano salis_ zu nehmen; beim Bootstrap handelt es sich um _sampling mit replacement_, d.h. ein und derselbe Wert darf mehrmals gezogen werden, während das "in der Realität" meist nicht der Fall sein dürfte.) Auf diese Weise habe ich nun z.B. 100 Schätzungen meines Kennwertes und kann für diese Schätzung die Standardabweichung berechnen, d.h. die Wurzel aus der durchschnittlichen quadrierten Abweichung der Schätzungen von ihrem Mittelwert.
 
 Gut - zum Umgang mit Streuung und Unsicherheit ist also der wichtigste Punkt, dass wir sie angeben müssen.
 Aber was exakt soll ich angeben? Vielleicht haben Sie schon einmal die Floskel "+/-2 Standardabweichungen" gehört. Woher kommt das und was bedeutet diese Information?
-Grundlage des ganzen ist das Central Limit Theorem. Das Central Limit Theorem besagt, dass Mittelwerte einer Zufallsvariable im Limit unendlicher Stichprobengrösse normalverteilt sind. Die Normalverteilung der Mittelwerte hat als Mittelwert den wahren Mittelwert und als Standardabweichung den sog. Standardfehler des Mittelwerts (die Standardabweichung der gemessenen Variable, geteilt durch die Wurzel der Stichprobengrösse). 
-Was bringt uns das? Für die Normalverteilung wissen wir, wieviel Prozent der Verteilung zwischen dem Mittelwert und einer, zwei oder drei Standardabweichungen liegen (Abb. TBD)
+Grundlage des ganzen ist das _Central Limit Theorem_. 
 
-```{r, echo=FALSE}
+Das _Central Limit Theorem_ besagt, dass Mittelwerte einer Zufallsvariable im Limit unendlicher Stichprobengrösse normalverteilt sind. Die Normalverteilung der Mittelwerte hat als Mittelwert den wahren Mittelwert und als Standardabweichung den sog. _Standardfehler des Mittelwerts_ (die Standardabweichung der gemessenen Variable, geteilt durch die Wurzel der Stichprobengrösse). 
+
+Was bringt uns das? Für die Normalverteilung wissen wir, wieviel Prozent der Verteilung zwischen dem Mittelwert und einer, zwei oder drei Standardabweichungen liegen (Abb. 6):
+
+```{r, echo=FALSE, fig.cap="Abb. 6: "}
 normal_prob_area_plot <- function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 * sd, mean + 4 * sd), fcolor = "blue", title = "") {
     x <- seq(limits[1], limits[2], length.out = 100)
     xmin <- max(lb, limits[1])
@@ -468,19 +490,45 @@ Im Bereich Objekterkennung z.B. werden _CNNs_ eingesetzt, _convolutional neural 
 
 
 ## Literatur
-Visualisierung: Chambers, Tufte 
-https://www.inf.ed.ac.uk/teaching/courses/pi/2016_2017/phil/tufte-powerpoint.pdf
 
-http://charliepark.org/slopegraphs/
+Literaturtipps zu Statistik, Visualisierung, Data Science, Deep Learning in ein paar Sätzen - das kann nur eine sehr subjektive, sehr eklektische Zusammenstellung von Pointern sein. 
+Ins Positive gewendet: Was folgt, sind aus meiner Sicht (_ein paar der_) Highlights des Feldes (der Felder, vielmehr): Bücher, die Spass machen zu lesen, Videos, die Spass machen zu schauen... etc.
 
-https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR&topic_id=1
+### Statistik und Visualisierung
+
+Natürlich gibt es eine Reihe hervorragender Einführungen in die Statistik, auf jedem gewünschten Niveau. Spannend sind vor allem neue Sichtweisen, die die letzten Jahre gebracht haben, u.a. als Folge der "Replikationskrise" in der Psychologie und der zunehmenden praktischen Anwendbarkeit Bayes'scher Statistik. Empfohlen seien hier z.B. die hervorragenden MOOCs "Statistical Inference" der Johns Hopkins Universität [5] und "Improving your statistical inferences" der TU Eindhoven [6].
+
+Welche Erkenntnisse sich aus der visuellen Aufbereitung von Daten ziehen lassen, zeigen sehr schön die Bücher des berühmten Statistikers John Tukey und seiner Mitautoren über explorative Datenanalyse. Als Beispiel sei hier "Graphical methods for data analysis" empfohlen [7]. Im Übergangsbereich zwischen Datenexploration und Grafikdesign liegen die auch optisch sehr ansprechenden Bücher von Edward Tufte, etwa das mit dem programmatischen Namen "Beautiful evidence" [1]. Der augenöffnende Essay über den "Cognitive Style of Powerpoint" ist frei als PDF verfügbar [2].
 
 
-New Statistics, Lakens
+### Data Science und Machine Learning
+
+Auch zum Thema Data Science gibt es einige hervorragende MOOCs, u.a. auch wieder von der Johns Hopkins University. Zur Abwechslung sei hier aber ein (noch dazu relativ dünnes) Buch empfohlen: das hervorragend konzipierte und geschriebene "Introduction to Statistical Learning" von Hastie et al. Zusätzlich zu den wunderbar klaren Erläuterungen enthält das Buch praktischen R Code, mit dem die Leser gleich praktische Erfahrungen sammeln können. Wer mehr mathematische Vorkenntnisse mitbringt, für den lohnt sich die Lektüre von Kevin Murphy's "Machine Learning: A probabilistic perspective" [9].
+
+### Deep Learning 
+
+_Das_ Buch zu Deep Learning ist, Stand heute, das gleichnamige MIT Buch von Goodfellow et al. [12].
+Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die Einblicke in das rasante Geschehen auf dem Gebiet geben: so zum Beispiel "Natural Language Processing with Deep Learning" aus Stanford [13] oder "Deep Learning for self-driving cars" vom MIT [14]. Eine gleichzeitig gut zugängliche und gute Einführung in Deep Learning ist die Vorlesung von Ali Ghodsi von der University of Waterloo [15].
 
 
-https://github.com/stephlocke/datasauRus/
-https://www.autodeskresearch.com/publications/samestats
+### Quellen/Empfehlungen
+
+[1] Edward Tufte, Beautiful Evidence. 2006.
+[2] https://www.inf.ed.ac.uk/teaching/courses/pi/2016_2017/phil/tufte-powerpoint.pdf
+[3] http://charliepark.org/slopegraphs/
+[4] https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR&topic_id=1
+[5] Johns Hopkins University, Statistical Inference. https://www.coursera.org/learn/statistical-inference
+[6] TU Eindhoven, Improving your statistical inferences. https://www.coursera.org/learn/statistical-inferences
+[7] Chambers et al., Graphical methods for data analysis. 1983.
+[8] James et al., Introduction to statistical learning. 2013. Online unter http://www-bcf.usc.edu/~gareth/ISL/.
+[9] Kevin Murphy, Machine Learning: A probabilistic perspective. 2012.
+[10] https://github.com/stephlocke/datasauRus/
+[11] https://www.autodeskresearch.com/publications/samestats
+[12] Goodfellow et al., Deep Learning. 2016. Online unter http://www.deeplearningbook.org/.
+[13] Stanford University, Natural Language Processing with Deep Learning. http://web.stanford.edu/class/cs224n/
+[14] MIT, Deep Learning for self-driving cars. http://selfdrivingcars.mit.edu/
+[15] University of Waterloo, Deep Learning. https://uwaterloo.ca/data-science/deep-learning
+
 
 http://www.economist.com/news/science-and-technology/21724370-fake-news-you-aint-seen-nothing-yet-generating-convincing-audio-and-video-fake
 
