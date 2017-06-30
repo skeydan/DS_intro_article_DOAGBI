@@ -137,7 +137,7 @@ g2 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_violin() + geo
 grid.arrange(g1, g2, ncol= 2, top = "Dataset C")
 ```
 
-### Quantile plots
+### Quantilplots
 
 Auf den ersten Blick weniger leicht zu lesen als _violin plots_, dafür aber sehr aussagekräftig sind Quantilplots. Hier werden die Originaldaten dem Wert nach geordnet und dann gegen ihre Position in der Ordnung, ausgedrückt als Proportion zwischen 0 und 1, geplottet.
 
@@ -178,13 +178,13 @@ Eine universell einsetzbare Methode ist der _Bootstrap_. Das geht so: Ich möcht
 
 Gut - zum Umgang mit Streuung und Unsicherheit ist also der wichtigste Punkt, dass wir sie angeben müssen.
 Aber was exakt soll ich angeben? Vielleicht haben Sie schon einmal die Floskel "+/-2 Standardabweichungen" gehört. Woher kommt das und was bedeutet diese Information?
-Grundlage des ganzen ist das _Central Limit Theorem_. 
+Grundlage des ganzen ist das _zentrale Grenzwerttheorem_. 
 
-Das _Central Limit Theorem_ besagt, dass Mittelwerte einer Zufallsvariable im Limit unendlicher Stichprobengrösse normalverteilt sind. Die Normalverteilung der Mittelwerte hat als Mittelwert den wahren Mittelwert und als Standardabweichung den sog. _Standardfehler des Mittelwerts_ (die Standardabweichung der gemessenen Variable, geteilt durch die Wurzel der Stichprobengrösse). 
+Das _zentrale Grenzwerttheorem_ besagt, dass Mittelwerte einer Zufallsvariable im Limit unendlicher Stichprobengrösse normalverteilt sind. Die Normalverteilung der Mittelwerte hat als Mittelwert den wahren Mittelwert und als Standardabweichung den sog. _Standardfehler des Mittelwerts_ (die Standardabweichung der gemessenen Variable, geteilt durch die Wurzel der Stichprobengrösse). 
 
 Was bringt uns das? Für die Normalverteilung wissen wir, wieviel Prozent der Verteilung zwischen dem Mittelwert und einer, zwei oder drei Standardabweichungen liegen (Abb. 6):
 
-```{r, echo=FALSE, fig.cap="Abb. 6: "}
+```{r, echo=FALSE, fig.cap="Abb. 6: Bei der Normalverteilung liegen zwischen Mittelwert +/- 1 Standardabweichung 68% der Werte, zwischen Mittelwert +/- 2 Standardabweichungen 95% der Werte, und zwischen Mittelwert +/- 3 Standardabweichungen 99% der Werte."}
 normal_prob_area_plot <- function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 * sd, mean + 4 * sd), fcolor = "blue", title = "") {
     x <- seq(limits[1], limits[2], length.out = 100)
     xmin <- max(lb, limits[1])
@@ -197,23 +197,25 @@ normal_prob_area_plot <- function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 
      + geom_ribbon(data = area, mapping = aes(x = x, ymin = ymin, ymax = ymax), fill = fcolor)
      + scale_x_continuous(limits = limits) + ggtitle(title))
 }
-g1 <- normal_prob_area_plot(-3,3, title = "99% Dichte")
-g2 <- normal_prob_area_plot(-2,2, title = "95% Dichte")
-g3 <- normal_prob_area_plot(-1,1, title = "68% Dichte")
+g1 <- normal_prob_area_plot(-3,3, title = "99%")
+g2 <- normal_prob_area_plot(-2,2, title = "95%")
+g3 <- normal_prob_area_plot(-1,1, title = "68%")
 grid.arrange(g3,g2,g1, ncol=2, nrow=3, top="")
 ```
 
-Damit kann ich für meine Parameterschätzung ein sog. Konfidenzintervall angeben. Leicht vereinfachend ausgedrückt: Wenn ich sage, meine Schätzung für den Parameter ist p +/- 2 mal Standardfehler, dann bin ich mir 95% sicher, dass der Parameter in diesem Bereich liegt. (Das ist in der Tat eine Vereinfachung. Siehe Literatur (TBD).) 
-Was ich jetzt noch bedenken muss: Ein Konfidenzintervall für einen Parameter ist nicht dasselbe wie ein sog. Vorhersageintervall (_prediction interval_). Das Vorhersageintervall bezieht sich auf eine konkrete Vorhersage für neue Daten, und ist (z.T. erheblich) breiter als das Konfidenzintervall. Wir werden in Teil 2 ein Beispiel sehen.
+Damit kann ich für meine Parameterschätzung ein sog. Konfidenzintervall angeben. Leicht vereinfachend ausgedrückt: Wenn ich sage, meine Schätzung für den Parameter ist p +/- 2 mal Standardfehler, dann bin ich mir 95% sicher, dass der Parameter in diesem Bereich liegt. (Das ist in der Tat eine Vereinfachung. Siehe Literatur [6].) 
+
+Was ich jetzt noch bedenken muss: Ein Konfidenzintervall für einen Parameter ist nicht dasselbe wie ein sog. Vorhersageintervall (_prediction interval_). Das Vorhersageintervall bezieht sich auf eine konkrete Vorhersage für neue Daten, und ist (z.T. erheblich) breiter als das Konfidenzintervall. 
 
 
 ## Was charakterisiert eine Beziehung?
 
 "Die Korrelation zwischen Investition in Onlinemarketing und Produktabsatz beträgt 0.8". Ein hervorragendes Ergebnis, oder? (Der Korrelationskoeffizient liegt zwischen 0 und 1; tatsächlich ist 0.8 eine sehr hohe Korrelation.) Nun ja, vielleicht. Auch hier gilt wieder: Ein Bild sagt mehr als 1000 Kennzahlen.
-Nehmen wir an, ich habe ein bivariates Dataset mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
-Schauen wir auf Abb. TBD: Alle diese Datasets erfüllen die o.g. Bedingungen ([TBD]). Jede Menge Zusammenhänge - nur eben nicht der lineare, den der Korrelationskoeffizient voraussetzt!
 
-```{r, echo=FALSE}
+Nehmen wir an, ich habe ein bivariates Dataset mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). Ein Korrelationskoeffizient von r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
+Schauen wir auf Abb. 7: Alle diese Datasets erfüllen die o.g. Bedingungen [10]. Jede Menge Zusammenhänge - nur eben nicht der lineare, den der Korrelationskoeffizient voraussetzt!
+
+```{r, echo=FALSE, fig.cap="Abb. 7: Datasaurus Dozen: 13 Datasets mit jeweils gleichen Mittelwerten und Standardabweichungen für x und y sowie gleicher (Nicht-) Korrelation."}
 ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
     geom_point()+
     theme_void()+
@@ -221,9 +223,9 @@ ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
     facet_wrap(~dataset, ncol=3)
 ```
 
-Berühmt ist auch Simpson's Paradox, bei dem sich die Einschätzung komplett ins Gegenteil verkehrt, je nachdem, ob man die Daten als Gesamtheit betrachtet oder getrennt nach Subgruppen. Siehe Abb. TBD: Die bei Gesamtbetrachtung stark positive Beziehung der Variablen wird zu einer stark negativen, wenn man das Dataset in Gruppen aufteilt.
+Berühmt ist auch Simpson's Paradox, bei dem sich die Einschätzung komplett ins Gegenteil verkehrt, je nachdem, ob man die Daten als Gesamtheit betrachtet oder getrennt nach Subgruppen. Siehe Abb. 8: Die bei Gesamtbetrachtung stark positive Beziehung der Variablen wird zu einer stark negativen, wenn man das Dataset in Gruppen aufteilt.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 8: Simpson's Paradox."}
 ggplot(simpsons_paradox, aes(x=x, y=y, colour=dataset))+
     geom_point()+
     theme_void()+
@@ -231,9 +233,9 @@ ggplot(simpsons_paradox, aes(x=x, y=y, colour=dataset))+
     facet_wrap(~dataset, ncol=3)
 ```
 
-Wie visualisiere ich nun am besten den Zusammenhang zwischen zwei Variablen? Das klassische Scatterplot ist dazu hervorragend geeignet. Beim normalen Scatterplot ist es allerdings nicht unbedingt einfach, die univariaten Verteilungen zu "sehen". Hier hilft es, z.B. ein Histogramm oder eine Dichtekurve hinzuzufügen, parallel zu den Achsen (Abb. TBD)
+Wie visualisiere ich nun am besten den Zusammenhang zwischen zwei Variablen? Das klassische Scatterplot ist dazu hervorragend geeignet. Beim normalen Scatterplot ist es allerdings nicht unbedingt einfach, die univariaten Verteilungen zu "sehen". Hier hilft es, z.B. ein Histogramm oder eine Dichtekurve hinzuzufügen, parallel zu den Achsen (Abb. 9):
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Ab. 9: Scatterplots, ergänzt um die Abbildung der univariaten Verteilungen durch Histogramme oder Dichtekurven entlang der Achsen."}
 g1 <- ggplot(datasaurus_dozen_wide, aes(x = bullseye_x, y = bullseye_y)) + geom_point() +
   theme_tufte(ticks=F) + theme(axis.title=element_blank(), axis.text=element_blank())
 g1 <- g1 %>% ggMarginal(type = "density")
@@ -243,17 +245,17 @@ g2 <- g2 %>% ggMarginal(type = "histogram", fill="transparent", bins = 20)
 grid.arrange(g2,g1, ncol=2)
 ```
 
-Diese Form der Visualisierung funktioniert hervorragend für bivariate Daten. Was, wenn die Zahl der interessierenden Varialen weit höher ist als 2?
+Diese Form der Visualisierung funktioniert hervorragend für bivariate Daten. Was, wenn die Zahl der interessierenden Variablen weit höher ist als 2?
 
 ## Aber die Dimensionalität meiner Daten ist viel zu hoch!
 
 Eine beliebte Möglichkeit ist, die Daten durch Hauptkomponentenanalyse (_Principal Components Analysis_, PCA) zu komprimieren. PCA überführt die Daten in ein neues Koordinatensystem, so dass die erste Achse/Komponente am meisten der Varianz erklärt, die zweite am zweitmeisten, die dritte am drittmeisten etc. Zu einer Dimensionsreduktion führt das dann, wenn wir nur die ersten, wichtigsten Achsen behalten und die anderen "wegschmeissen". Zur (zweidimensionalen) Visualisierung eignet sich PCA besonders dann, wenn die ersten beiden Achsen tatsächlich den grössten Teil der Varianz erklären.
 
-Abb. TBD zeigt das Ergebnis für ein Dataset von Pixelbereichen eines Satellitenbilds. Für jeden Bereich soll aus je 36 multispektralen Pixelwerten ermittelt werden, wie die zugrundeliegende Bodenbeschaffenheit ist. Wir sehen, dass PCA einige Klassen gut, andere aber deutlich schlechter identifiziert.
+Abb. 10a zeigt das Ergebnis für ein Dataset von Pixelbereichen eines Satellitenbilds. Für jeden Bereich soll aus je 36 multispektralen Pixelwerten ermittelt werden, wie die zugrundeliegende Bodenbeschaffenheit ist. Wir sehen, dass PCA einige Klassen gut, andere aber deutlich schlechter identifiziert.
 
-PCA ist eine lineare Methode. Nichtlineare Daten lassen sich mit einer relativ neuen, nichtlinearen, nichtdeterministischen Methode namens t-SNE (t-Distributed Stochastic Neighbor Embedding) besser visualisieren. Abb. TBD zeigt das Eregebnis von t-SNE. Jetzt sind alle 6 in den Daten vorhandenen Klassen sehr schön erkennbar.
+PCA ist eine lineare Methode. Nichtlineare Daten lassen sich mit einer relativ neuen, nichtlinearen, nichtdeterministischen Methode namens t-SNE (_t-Distributed Stochastic Neighbor Embedding_) besser visualisieren. Abb. 10b zeigt das Eregebnis von t-SNE. Jetzt sind alle 6 in den Daten vorhandenen Klassen sehr schön erkennbar.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, fig.cap="Abb. 10: Reduktion 36-dimensionaler Daten durch PCA resp. t-SNE. 10a.: PCA. 10b.: t-SNE."}
 par(mfrow= c(1,2))
 # https://archive.ics.uci.edu/ml/datasets/Statlog+%28Landsat+Satellite%29
 sat <- read_delim("sat.trn", delim = " ", col_names = FALSE)
@@ -272,34 +274,50 @@ Wir haben gesehen, wie man Daten verschiedener Dimensionalität beschreibt und v
 
 Nachdem wir jetzt das nötige Rüstzeug haben, um uns im Dschungel zurechtzufinden, können wir uns endlich auf Schatzsuche begeben: Was für Erkenntnisse können wir aus den Daten ziehen, was für Methoden setzen wir ein?
 Welche Methoden wir einsetzen, hängt von unserer Fragestellung und der Art der Daten ab.
-Haben wir gewohnte, strukturierte Daten wie Verkaufszahlen, Ausgaben, Kundendaten, Business-Metriken o.ä., befinden wir uns im Bereich klassischer Methoden wie Regression, Decision Trees, Clusteranalyse etc. Ob man das eher _Data Science_ nennt, _Machine Learning_, _Data Mining_ oder _Advanced Analytics_, ist eine Frage der Vorlieben, der Richtung, aus der man kommt, oder des Umfelds, in dem man arbeitet - die Algorithmen dahinter sind dieselben. Auch die Übergänge zur Statistik sind fliessend. (Nicht umsonst wird im Literaturteil insbesondere ein Buch mit dem Titel "Introduction to Statistical Learning" empfohlen.) Im folgenden werde ich meist von Data Science sprechen.
+Haben wir gewohnte, strukturierte Daten wie Verkaufszahlen, Ausgaben, Kundendaten, Business-Metriken o.ä., befinden wir uns im Bereich klassischer Methoden wie Regression, Decision Trees, Clusteranalyse etc. 
 
-Wenn also das (selbst unter der "Hype-Bezeichnung" Data Science!) das klassische Vorgehen ist, was ist dann die Alternative? Das ist das sogenannte _Deep Learning_, mit dem in Bereichen wie Bilderkennung, maschinelle Übersetzung oder Robotik zur Zeit jedes Jahr neue Rekorde gebrochen werden. Auch wenn Deep Learning prinzipiell auf "klassische" Daten anwendbar ist, so liegen seine Stärken doch vor allem in Aufgabenstellungen wie den genannten. Deep Learning stellt die gewohnten Denkweisen auf den Kopf: Es geht nicht darum, das zu lösen, was für uns Menschen schwer und zeitraubend ist (komplizierte Kalkulationen zum Beispiel), sondern das, was uns leicht fällt: sprechen, verstehen, sehen, gehen. Traditionell sind es genau diese Dinge, die für Maschinen schwer sind - das ist es, was sich mit Deep Learning nun zunehmend ändert.
+Ob man das eher _Data Science_ nennt, _Machine Learning_, _Data Mining_ oder _Advanced Analytics_, ist eine Frage der Vorlieben, der Richtung, aus der man kommt, oder des Umfelds, in dem man arbeitet - die Algorithmen dahinter sind dieselben. Auch die Übergänge zur Statistik sind fliessend. (Nicht umsonst wird im Literaturteil insbesondere ein Buch mit dem Titel "Introduction to Statistical Learning" empfohlen.) Im folgenden werde ich meist von Data Science sprechen.
+
+Wenn also das (selbst unter der "Hype-Bezeichnung" Data Science!) das klassische Vorgehen ist, was ist dann die Alternative? Das ist das sogenannte _Deep Learning_, mit dem in Bereichen wie Bilderkennung, maschinelle Übersetzung oder Robotik zur Zeit jedes Jahr neue Rekorde gebrochen werden.
+
+Auch wenn Deep Learning prinzipiell auf "klassische" Daten anwendbar ist, so liegen seine Stärken doch vor allem in Aufgabenstellungen wie den genannten. Deep Learning stellt die gewohnten Denkweisen auf den Kopf: Es geht nicht darum, das zu lösen, was für uns Menschen schwer und zeitraubend ist (komplizierte Kalkulationen zum Beispiel), sondern das, was uns leicht fällt: sprechen, verstehen, sehen, gehen. Traditionell sind es genau diese Dinge, die für Maschinen schwer sind - das ist es, was sich mit Deep Learning nun zunehmend ändert.
+
 Aber bevor wir uns Deep Learning genauer anschauen, wollen wir sehen: Was geht mit, wozu hilft uns und wie macht man _Data Science_?
 
 ## Goodness of fit
 
 Die Diskussion dessen, was wir mit Data Science machen können, wird unter dem Motto _Vorhersagen und Erklären_, oder auch: _Vorhersagen vs. Erklären_, stehen. Um Missverständnisse zu vermeiden, müssen wir eine Sache vorab klären: Wie messe ich, wie gut ein Modell ist?
+
 Das Allerwichtigste: Immer an neuen Daten; niemals an denen, mit denen ich das Modell gefittet habe.
 Egal, mit welcher Methode ich arbeite: Als erstes teile ich immer die Daten in zwei, ggf. drei, Sets, ein Training Set, ein Validation Set (optional) und ein Test Set.
+
 Das Training Set benutze ich, um ein Modell zu fitten - sagen wir, ein Modell zur Bestimmung von Kundenzufriedenheit aus Faktoren wie Produktkategorie, Preiskategorie, Schnelligkeit der Lieferung etc. Während des gesamten Model Fittings lasse ich mein Test Set unberührt. Das Test Set verwende ich ausschliesslich, um die Performance des Modells abschliessend zu prüfen.
+
 Gut - viele Modelle aber haben Parameter, die ich variieren kann (und sollte!), um die bestmöglichen Einstellungen zu finden. Wie kann ich wissen, welches Setting schlussendlich das beste Ergebnis liefern wird, wenn ich das Test Set nicht konsultieren darf?
+
 Zu diesem Zweck habe ich möglicherweise das Validation Set. In diesem Fall würde ich das Validation Set benutzen, um die Performance unter verschiedenen Permutationen von Parameter Settings zu testen.
-Häufiger ist der Einsatz von Kreuzvalidierung (_cross validation_). Bei der Kreuzvalidierung benutze ich das Training Set, um die besten Settings zu bestimmen. Das geht so: Ich unterteile das Training Set in _n_ Subsets (meist 5 oder 10). Nehmen wir 5 als Beispiel. Jetzt iteriere ich über die Subsets, und zwar so. Im ersten Schritt nehme ich die Subsets 1 bis 4, lege sie zusammen und trainiere auf dieser Datenbasis meine verschiedenen Modelle. (Der Einfachheit halber spreche ich hier von "Modellen", es kann sich aber durchaus um ein und denselben Algorithmus handeln, jeweils mit verschiedenen Parameter Settings.) Die Performance dieser Modelle teste ich nun am fürs Fitten nicht benutzten Subset, Subset 5. Dann wiederhole ich den Vorgang mit Subsets 2-5 fürs Fitten und Subset 1 zum Testen; Subsets 3,4,5,1 fürs Fitten und Subset 2 zum Testen; und so weiter, bis ich jedes Subset einmal zum Testen verwendet habe. Die Ergebnisse für die verschiedenen Modelle werden gemittelt, und ich habe eine valide Entscheidungsgrundlage für die Modellauswahl. Die Performance auf dem Test Set wird dann separat bestimmt.
+Häufiger ist der Einsatz von Kreuzvalidierung (_cross validation_). Bei der Kreuzvalidierung benutze ich das Training Set, um die besten Settings zu bestimmen. 
+
+Das geht so: Ich unterteile das Training Set in _n_ Subsets (meist 5 oder 10). Nehmen wir 5 als Beispiel. Jetzt iteriere ich über die Subsets, und zwar so. Im ersten Schritt nehme ich die Subsets 1 bis 4, lege sie zusammen und trainiere auf dieser Datenbasis meine verschiedenen Modelle. (Der Einfachheit halber spreche ich hier von "Modellen", es kann sich aber durchaus um ein und denselben Algorithmus handeln, jeweils mit verschiedenen Parameter Settings.) Die Performance dieser Modelle teste ich nun am fürs Fitten nicht benutzten Subset, Subset 5. Dann wiederhole ich den Vorgang mit Subsets 2-5 fürs Fitten und Subset 1 zum Testen; Subsets 3,4,5,1 fürs Fitten und Subset 2 zum Testen; und so weiter, bis ich jedes Subset einmal zum Testen verwendet habe. Die Ergebnisse für die verschiedenen Modelle werden gemittelt, und ich habe eine valide Entscheidungsgrundlage für die Modellauswahl. Die Performance auf dem Test Set wird dann separat bestimmt.
+
 Wie funktioniert die Trennung in Training Set und Test Set? Im Normalfall einfach als Zufallsauswahl.
 Anders verhält es sich bei Zeitreihen, also Daten, die intrinsisch zeitlich geordnet sind. Hier würde man jeweils zusammenhängende Zeiträume für das Training Set und für das Test Set wählen.
+
 Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Dataset gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
+
 Jetzt aber schauen wir erst einmal, was es mit dem Gegensatz _Vorhersagen vs. Erklären_ auf sich hat.
 .
 
 ## Vorhersagen vs. Erklären
 
-Schauen wir auf Abb. TBD. Links sehen wir ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
+Schauen wir auf Abb. 11. Links sehen wir ein klassisches Beispiel für sogenannte _Time series_  - (Zeitreihen-) Daten: monatliche Zahlen von Fluggästen. Zeitreihen können auch multivariat sein, d.h. mehrere Variablen umfassen, die man dann aufeinander beziehen kann - häufig aber haben wir eine einzelne Zeitreihe vorliegen und möchten Aussagen über den weiteren Verlauf machen.
+
 Hier ist das Ziel ganz klar: Wir möchten eine möglichst korrekte Vorhersage! Damit haben wir ein ganz einfaches Entscheidungskriterium, welche Methode wir wählen sollen: Wir wählen die, die die beste Vorhersage liefert! (Für die Bestimmung der "besten Vorhersage" gilt, wie gerade besprochen: Model Fitting am Training Set und abschliessende Beurteilung am Test Set.).
-Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwendete Methode zur isolierten Betrachtung einzelner Zeitreihen. Selbst wenn man sich am Ende für einen anderen Algorithmus entscheiden sollte, ist ARIMA immer eine gute Wahl für eine exzellente Baseline. Für das Thema Zeitreihen sei nun auf den Literaturteil verwiesen, da wir hier nicht speziell auf dieses komplexe und faszinierende Thema eingehen können.
+
+Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwendete Methode zur isolierten Betrachtung einzelner Zeitreihen. 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.cap="Abb. 11: Eine univariate Zeitreihe und Vorhersage mittels ARIMA."}
 g1 <- autoplot(AirPassengers)
 fit <- auto.arima(AirPassengers)
 g2 <- autoplot(forecast(fit))
@@ -307,11 +325,14 @@ grid.arrange(g1,g2, ncol=2)
 ```
 
 
-Nehmen wir nun an, wir haben eine Situation wie in A. TBD. Hier geht es darum, den Verkaufspreis eines Anwesens aus Variablen wie Wohnraum, Grösse der Garage etc. vorherzusagen. Wie bei den Zeitreihen kann es auch hier einfach das Ziel sein, die bestmögliche Vorhersage zu machen (in diesem Fall, einen optimalen Verkaufspreis zu bestimmen, der weder potentielle Käufer verschreckt noch zu einem Verkauf unter Wert führt).Ich kann aber auch das Ziel haben, etwas über die Welt herauszufinden: In diesem Fall: Was bestimmt eigentlich den Verkaufspreis? Das mag bei der Beschränkung auf Quadratmeterangaben und dergleichen wenig spannend wirken, wird aber schon anders, wenn wir sozioökonomische, geographische, politische Fakten hinzunehmen. Damit hier keine Missverständnisse aufkommen: Natürlich bedeutet der Fokus auf Erklären/Verstehen keinesfalls, dass wir hier notwendig ein wissenschaftliches Interesse verfolgen. Das kann sein, muss aber nicht. Es kann auch einfach darum gehen, durch Abstraktion die Entscheidungsfindung zu erleichtern. 
+Nehmen wir nun an, wir haben eine Situation wie in Abb. 12 [16]. Hier geht es darum, den Verkaufspreis eines Anwesens aus Variablen wie Wohnraum, Grösse der Garage etc. vorherzusagen. Wie bei den Zeitreihen kann es auch hier einfach das Ziel sein, die bestmögliche Vorhersage zu machen (in diesem Fall, einen optimalen Verkaufspreis zu bestimmen, der weder potentielle Käufer verschreckt noch zu einem Verkauf unter Wert führt).
+
+Das Ziel könnte aber auch sein, etwas über die Welt herauszufinden,  in diesem Fall: Was bestimmt eigentlich den Verkaufspreis? Das mag bei der Beschränkung auf Quadratmeterangaben und dergleichen wenig spannend wirken, wird aber schon anders, wenn wir sozioökonomische, geographische, politische Fakten hinzunehmen. Damit hier keine Missverständnisse aufkommen: Natürlich bedeutet der Fokus auf Erklären/Verstehen keinesfalls, dass wir hier notwendig ein wissenschaftliches Interesse verfolgen. Das kann sein, muss aber nicht. Es kann auch einfach darum gehen, durch Abstraktion die Entscheidungsfindung zu erleichtern. 
+
 Je nachdem, was uns primär interessiert - die Genauigkeit der Vorhersage oder ein erklärendes Modell -, werden wir den Schwerpunkt auf unterschiedliche Methoden legen.
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Verkaufsspreis von Anwesen und 6 Einflussvariablen."}
 ames <- read_csv("ames_housing_train.csv")
 ames_part <- ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) %>% filter(GrLivArea < 4000) 
 ames_part %>% ggpairs()
@@ -321,10 +342,10 @@ ames_part %>% ggpairs()
 
 ## Erklären
 
-Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. TBD):
+Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. 13a):
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 13: Regression des Verkaufspreises auf Wohnfläche "}
 fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
 preds1 <- predict(fit1, se = T)
 df <- ames_part %>% mutate(pred1 = preds1$fit,
@@ -511,7 +532,7 @@ _Das_ Buch zu Deep Learning ist, Stand heute, das gleichnamige MIT Buch von Good
 Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die Einblicke in das rasante Geschehen auf dem Gebiet geben: so zum Beispiel "Natural Language Processing with Deep Learning" aus Stanford [13] oder "Deep Learning for self-driving cars" vom MIT [14]. Eine gleichzeitig gut zugängliche und gute Einführung in Deep Learning ist die Vorlesung von Ali Ghodsi von der University of Waterloo [15].
 
 
-### Quellen/Empfehlungen
+### Quellen und Literatur
 
 [1] Edward Tufte, Beautiful Evidence. 2006.
 [2] https://www.inf.ed.ac.uk/teaching/courses/pi/2016_2017/phil/tufte-powerpoint.pdf
@@ -523,11 +544,11 @@ Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die
 [8] James et al., Introduction to statistical learning. 2013. Online unter http://www-bcf.usc.edu/~gareth/ISL/.
 [9] Kevin Murphy, Machine Learning: A probabilistic perspective. 2012.
 [10] https://github.com/stephlocke/datasauRus/
-[11] https://www.autodeskresearch.com/publications/samestats
 [12] Goodfellow et al., Deep Learning. 2016. Online unter http://www.deeplearningbook.org/.
 [13] Stanford University, Natural Language Processing with Deep Learning. http://web.stanford.edu/class/cs224n/
 [14] MIT, Deep Learning for self-driving cars. http://selfdrivingcars.mit.edu/
 [15] University of Waterloo, Deep Learning. https://uwaterloo.ca/data-science/deep-learning
+[16] Ames Housing Dataset, http://www.amstat.org/publications/jse/v19n3/decock.pdf.
 
 
 http://www.economist.com/news/science-and-technology/21724370-fake-news-you-aint-seen-nothing-yet-generating-convincing-audio-and-video-fake
