@@ -57,21 +57,21 @@ Bevor wir fragen, was Data Science und Artificial Intelligence uns geben können
 Dass Mittelwerte ein fragwürdiges Summary sein können, hat jeder schon einmal gehört. Aber warum eigentlich ist das so bzw. in welchen Fällen?
 Schauen wir uns zunächst einen Fall an, wo es nicht schadet, einen Mittelwert anzugeben: Abb. 1a.
 
-```{r, echo=FALSE, fig.cap="Abb. 1. 1a.: In etwa normalverteilte Daten - Mittelwert und Median liegen dicht beieinander. 1b.: Stark schiefe Daten; der Mittelwert ist weit nach rechts gezogen."}
+```{r, echo=FALSE, fig.cap="Abb. 1: Mittelwert vs. Median. 1a: In etwa normalverteilte Daten - Mittelwert und Median liegen dicht beieinander. 1b: Stark schiefe Daten; der Mittelwert ist weit nach rechts gezogen."}
 g1 <- ggplot(algae, aes(x = mxPH)) + geom_density(na.rm = TRUE) + 
   geom_vline(aes(xintercept = mean(algae$mxPH, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(algae$mxPH, na.rm = TRUE), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Statistik", values = c(2, 2), 
                       guide = guide_legend(override.aes = list(color = c("green", "red")))) +
  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + 
-  ggtitle("Dataset A")
+  ggtitle("Datensatz A")
 
 g2 <- ggplot(algae, aes(x = a1)) + geom_density(na.rm = TRUE) + 
   geom_vline(aes(xintercept = mean(algae$a1, na.rm = TRUE), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(algae$a1, na.rm = TRUE), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Statistik", values = c(2, 2), 
   guide = guide_legend(override.aes = list(color = c("green", "red")))) +
-  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + ggtitle("Dataset B")
+  xlab("") + ylab("Dichte") + theme(legend.position="bottom") + ggtitle("Datensatz B")
 
 grid.arrange(g1, g2, ncol = 2)
 ```
@@ -87,14 +87,14 @@ Insofern ist der Median, wenn es um knappe Charakterisierung der Daten geht, sch
 
 Wie aussagekräftig ist z.B. der Median, wenn ich Daten habe wie in Abb. 2? Hier liegen die meisten Daten eben gerade nicht in der Mitte, sondern an den Enden der Verteilung...
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Abb. 2. Ein bimodales Dataset."}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.cap="Abb. 2: Ein bimodaler Datensatz."}
 betas <- rbeta(100,.5,.5)
 ggplot(data.frame(x=betas), aes(x = x)) + geom_histogram(bins = 20) +
   geom_vline(aes(xintercept = mean(x), linetype = "Mittelwert"), color = 'red') + 
   geom_vline(aes(xintercept = median(x), linetype = "Median"), color = 'green') + 
   scale_linetype_manual(name = "Statistik", values = c(2, 2), 
                       guide = guide_legend(override.aes = list(color = c("red", "green")))) +
-  ylab("Anzahl") + ggtitle("Dataset C")
+  ylab("Anzahl") + ggtitle("Datensatz C")
 
   
 ```
@@ -111,14 +111,14 @@ Was zeigt uns nun das Boxplot in Abb. 3a? Man sieht unmittelbar, dass das obere 
 Wir können die Aussagekraft des Boxplots noch steigern, indem wir, wie in Abb. 3b geschehen, Mittelwert und Modus (den häufigsten Wert der Verteilung, in diesem Fall 0) hinzufügen.
 
 
-```{r, echo=FALSE, fig.cap="Abb. 3. Charakterisierung einer ganzen Verteilung durch ein Boxplot. 3a.: Die rechtsschiefe Verteilung aus Abb. 1b. 3b.: Dasselbe Boxplot, mit Mittelwert und Modus der Verteilung."}
+```{r, echo=FALSE, fig.cap="Abb. 3: Charakterisierung einer ganzen Verteilung durch ein Boxplot. 3a: Die rechtsschiefe Verteilung aus Abb. 1b. 3b: Dasselbe Boxplot, mit Mittelwert und Modus der Verteilung."}
 g1 <- ggplot(algae, aes(x = 1, y = a1)) + geom_boxplot() + ylab("")
 mod <-algae %>% group_by(a1) %>% summarize(n = n()) %>% arrange(desc(n)) %>% select(a1) %>% head(1)
 g2 <- ggplot(algae, aes(x = 1, y = a1))  + geom_boxplot() + 
   geom_hline(aes(yintercept = mean(algae$a1)), color = "green", linetype=2) + 
   geom_hline(aes(yintercept = mod), color = "blue", linetype=4)  + 
   ylab("")
-grid.arrange(g1, g2, ncol= 2, top = "Dataset B")
+grid.arrange(g1, g2, ncol= 2, top = "Datensatz B")
 ```
 
 ### _Violin plots_
@@ -129,35 +129,35 @@ Um nachzuhelfen, haben wir das Boxplot entlang der y-Achse um Strichmuster ergä
 
 
 
-```{r, echo=FALSE, fig.cap="Abb. 4: Boxplot vs. violin plot für das bimodale Dataset. 4a.: Boxplot. 4b.: violin plot."}
+```{r, echo=FALSE, fig.cap="Abb. 4: Boxplot vs. violin plot für den bimodalen Datensatz. 4a: Boxplot. 4b: violin plot."}
 g1 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_boxplot() + geom_rug() +
   ylab("")
 g2 <- ggplot(data_frame(y = betas), aes(x = 1, y = betas)) + geom_violin() + geom_rug() + ylab("")
 
-grid.arrange(g1, g2, ncol= 2, top = "Dataset C")
+grid.arrange(g1, g2, ncol= 2, top = "Datensatz C")
 ```
 
 ### Quantilplots
 
 Auf den ersten Blick weniger leicht zu lesen als _violin plots_, dafür aber sehr aussagekräftig sind Quantilplots. Hier werden die Originaldaten dem Wert nach geordnet und dann gegen ihre Position in der Ordnung, ausgedrückt als Proportion zwischen 0 und 1, geplottet.
 
-```{r, echo=FALSE, fig.cap="Abb. 5: Quantilplots. 5a.: Quantilplot für das rechtsschiefe Dataset. 5b.: Quantilplot für das bimodale Dataset."}
+```{r, echo=FALSE, fig.cap="Abb. 5: Quantilplots. 5a: Quantilplot für den rechtsschiefen Datensatz. 5b: Quantilplot für den bimodalen Datensatz."}
 sorted <- sort(algae$a1)
 df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
 g1 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
-  ggtitle("Dataset B")
+  ggtitle("Datensatz B")
 sorted <- sort(betas)
 df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
 g2 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
-  ggtitle("Dataset B")
+  ggtitle("Datensatz B")
 grid.arrange(g1, g2, ncol= 2)
 ```
 
 Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.25, 0.5, 0.75) ablesen.
 
-Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. 5a und Abb. 5b: Links haben wir Dataset B, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
+Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. 5a und Abb. 5b: Links haben wir Datensatz B, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
 
-Ganz anders Dataset C, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
+Ganz anders Datensatz C, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
 
 ### Informationsdichte und Plot-Design
 
@@ -174,7 +174,7 @@ Vielleicht ist das auch genug: Vielleicht möchte ich tatsächlich nur zusammenf
 
 Sobald wir verallgemeinern, vorhersagen oder extrapolieren, verlassen wir das Reich der Gewissheiten. Es ist essentiell, dass wir uns über den Unschärfefaktor im klaren sind und ihn quantifizieren können. Die meisten der Methoden, die wir in Teil 2 besprechen werden, kommen bereits mit Angaben über die Unschärfe. Was kann man machen, wenn die Methode kein solches Mass liefert? 
 
-Eine universell einsetzbare Methode ist der _Bootstrap_. Das geht so: Ich möchte die Beziehung zwischen zwei Variablen, sagen wir x und y, "allgemeingültig" charakterisieren, habe aber nur ein fixes Set von Daten. Dieses Dataset ist eine mögliche Stichprobe von Werten aus der Population aller Werte. Nun behandle ich einfach mein Dataset, meine Stichprobe, selber als Population: Ich ziehe wiederholt Stichproben aus der Population und berechne jeweils die Beziehung zwischen x und y. (Die Analogie ist _cum grano salis_ zu nehmen; beim Bootstrap handelt es sich um _sampling mit replacement_, d.h. ein und derselbe Wert darf mehrmals gezogen werden, während das "in der Realität" meist nicht der Fall sein dürfte.) Auf diese Weise habe ich nun z.B. 100 Schätzungen meines Kennwertes und kann für diese Schätzung die Standardabweichung berechnen, d.h. die Wurzel aus der durchschnittlichen quadrierten Abweichung der Schätzungen von ihrem Mittelwert.
+Eine universell einsetzbare Methode ist der _Bootstrap_. Das geht so: Ich möchte die Beziehung zwischen zwei Variablen, sagen wir x und y, "allgemeingültig" charakterisieren, habe aber nur ein fixes Set von Daten. Dieser Datensatz ist eine mögliche Stichprobe von Werten aus der Population aller Werte. Nun behandle ich einfach meinen Datensatz, meine Stichprobe, selber als Population: Ich ziehe wiederholt Stichproben aus der Population und berechne jeweils die Beziehung zwischen x und y. (Die Analogie ist _cum grano salis_ zu nehmen; beim Bootstrap handelt es sich um _sampling mit replacement_, d.h. ein und derselbe Wert darf mehrmals gezogen werden, während das "in der Realität" meist nicht der Fall sein dürfte.) Auf diese Weise habe ich nun z.B. 100 Schätzungen meines Kennwertes und kann für diese Schätzung die Standardabweichung berechnen, d.h. die Wurzel aus der durchschnittlichen quadrierten Abweichung der Schätzungen von ihrem Mittelwert.
 
 Gut - zum Umgang mit Streuung und Unsicherheit ist also der wichtigste Punkt, dass wir sie angeben müssen.
 Aber was exakt soll ich angeben? Vielleicht haben Sie schon einmal die Floskel "+/-2 Standardabweichungen" gehört. Woher kommt das und was bedeutet diese Information?
@@ -200,7 +200,7 @@ normal_prob_area_plot <- function(lb, ub, mean = 0, sd = 1, limits = c(mean - 4 
 g1 <- normal_prob_area_plot(-3,3, title = "99%")
 g2 <- normal_prob_area_plot(-2,2, title = "95%")
 g3 <- normal_prob_area_plot(-1,1, title = "68%")
-grid.arrange(g3,g2,g1, ncol=2, nrow=3, top="")
+grid.arrange(g3,g2,g1, ncol=3, nrow=1, top="")
 ```
 
 Damit kann ich für meine Parameterschätzung ein sog. Konfidenzintervall angeben. Leicht vereinfachend ausgedrückt: Wenn ich sage, meine Schätzung für den Parameter ist p +/- 2 mal Standardfehler, dann bin ich mir 95% sicher, dass der Parameter in diesem Bereich liegt. (Das ist in der Tat eine Vereinfachung. Siehe Literatur [6].) 
@@ -212,10 +212,10 @@ Was ich jetzt noch bedenken muss: Ein Konfidenzintervall für einen Parameter is
 
 "Die Korrelation zwischen Investition in Onlinemarketing und Produktabsatz beträgt 0.8". Ein hervorragendes Ergebnis, oder? (Der Korrelationskoeffizient liegt zwischen 0 und 1; tatsächlich ist 0.8 eine sehr hohe Korrelation.) Nun ja, vielleicht. Auch hier gilt wieder: Ein Bild sagt mehr als 1000 Kennzahlen.
 
-Nehmen wir an, ich habe ein bivariates Dataset mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). Ein Korrelationskoeffizient von r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
-Schauen wir auf Abb. 7: Alle diese Datasets erfüllen die o.g. Bedingungen [10]. Jede Menge Zusammenhänge - nur eben nicht der lineare, den der Korrelationskoeffizient voraussetzt!
+Nehmen wir an, ich habe einen bivariaten Datensatz mit Variablen x und y. Ich kenne den Mittelwert von x (~54.26), den Mittelwert von y (~47.83) und die jeweiligen Standardabweichungen (~16.76 resp. ~26.93). Vor allem kenne ich die Korrelation zwischen x und y (~-0.06). Ein Korrelationskoeffizient von r = -0.06 bedeutet, die Daten sind unkorreliert, es gibt also keinen interessanten Zusammenhang. Wirklich?
+Schauen wir auf Abb. 7: Alle diese Datensätze erfüllen die o.g. Bedingungen [10]. Jede Menge Zusammenhänge - nur eben nicht der lineare, den der Korrelationskoeffizient voraussetzt!
 
-```{r, echo=FALSE, fig.cap="Abb. 7: Datasaurus Dozen: 13 Datasets mit jeweils gleichen Mittelwerten und Standardabweichungen für x und y sowie gleicher (Nicht-) Korrelation."}
+```{r, echo=FALSE, fig.cap="Abb. 7: Datasaurus Dozen - 13 Datensätze mit jeweils gleichen Mittelwerten und Standardabweichungen für x und y sowie gleicher (Nicht-) Korrelation."}
 ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
     geom_point()+
     theme_void()+
@@ -223,7 +223,7 @@ ggplot(datasaurus_dozen, aes(x=x, y=y, colour=dataset))+
     facet_wrap(~dataset, ncol=3)
 ```
 
-Berühmt ist auch Simpson's Paradox, bei dem sich die Einschätzung komplett ins Gegenteil verkehrt, je nachdem, ob man die Daten als Gesamtheit betrachtet oder getrennt nach Subgruppen. Siehe Abb. 8: Die bei Gesamtbetrachtung stark positive Beziehung der Variablen wird zu einer stark negativen, wenn man das Dataset in Gruppen aufteilt.
+Berühmt ist auch Simpson's Paradox, bei dem sich die Einschätzung komplett ins Gegenteil verkehrt, je nachdem, ob man die Daten als Gesamtheit betrachtet oder getrennt nach Subgruppen. Siehe Abb. 8: Die bei Gesamtbetrachtung stark positive Beziehung der Variablen wird zu einer stark negativen, wenn man den Datensatz in Gruppen aufteilt.
 
 ```{r, echo=FALSE, fig.cap="Abb. 8: Simpson's Paradox."}
 ggplot(simpsons_paradox, aes(x=x, y=y, colour=dataset))+
@@ -251,11 +251,11 @@ Diese Form der Visualisierung funktioniert hervorragend für bivariate Daten. Wa
 
 Eine beliebte Möglichkeit ist, die Daten durch Hauptkomponentenanalyse (_Principal Components Analysis_, PCA) zu komprimieren. PCA überführt die Daten in ein neues Koordinatensystem, so dass die erste Achse/Komponente am meisten der Varianz erklärt, die zweite am zweitmeisten, die dritte am drittmeisten etc. Zu einer Dimensionsreduktion führt das dann, wenn wir nur die ersten, wichtigsten Achsen behalten und die anderen "wegschmeissen". Zur (zweidimensionalen) Visualisierung eignet sich PCA besonders dann, wenn die ersten beiden Achsen tatsächlich den grössten Teil der Varianz erklären.
 
-Abb. 10a zeigt das Ergebnis für ein Dataset von Pixelbereichen eines Satellitenbilds. Für jeden Bereich soll aus je 36 multispektralen Pixelwerten ermittelt werden, wie die zugrundeliegende Bodenbeschaffenheit ist. Wir sehen, dass PCA einige Klassen gut, andere aber deutlich schlechter identifiziert.
+Abb. 10a zeigt das Ergebnis für einen Datensatz von Pixelbereichen eines Satellitenbilds. Für jeden Bereich soll aus je 36 multispektralen Pixelwerten ermittelt werden, wie die zugrundeliegende Bodenbeschaffenheit ist. Wir sehen, dass PCA einige Klassen gut, andere aber deutlich schlechter identifiziert.
 
 PCA ist eine lineare Methode. Nichtlineare Daten lassen sich mit einer relativ neuen, nichtlinearen, nichtdeterministischen Methode namens t-SNE (_t-Distributed Stochastic Neighbor Embedding_) besser visualisieren. Abb. 10b zeigt das Eregebnis von t-SNE. Jetzt sind alle 6 in den Daten vorhandenen Klassen sehr schön erkennbar.
 
-```{r, echo=FALSE, message=FALSE, fig.cap="Abb. 10: Reduktion 36-dimensionaler Daten durch PCA resp. t-SNE. 10a.: PCA. 10b.: t-SNE."}
+```{r, echo=FALSE, message=FALSE, fig.cap="Abb. 10: Reduktion 36-dimensionaler Daten durch PCA resp. t-SNE. 10a: PCA. 10b: t-SNE."}
 par(mfrow= c(1,2))
 # https://archive.ics.uci.edu/ml/datasets/Statlog+%28Landsat+Satellite%29
 sat <- read_delim("sat.trn", delim = " ", col_names = FALSE)
@@ -303,7 +303,7 @@ Das geht so: Ich unterteile das Training Set in _n_ Subsets (meist 5 oder 10). N
 Wie funktioniert die Trennung in Training Set und Test Set? Im Normalfall einfach als Zufallsauswahl.
 Anders verhält es sich bei Zeitreihen, also Daten, die intrinsisch zeitlich geordnet sind. Hier würde man jeweils zusammenhängende Zeiträume für das Training Set und für das Test Set wählen.
 
-Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Dataset gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
+Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Datasatz gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
 
 Jetzt aber schauen wir erst einmal, was es mit dem Gegensatz _Vorhersagen vs. Erklären_ auf sich hat.
 .
@@ -317,7 +317,7 @@ Hier ist das Ziel ganz klar: Wir möchten eine möglichst korrekte Vorhersage! D
 Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwendete Methode zur isolierten Betrachtung einzelner Zeitreihen. 
 
 
-```{r, echo=FALSE, fig.cap="Abb. 11: Eine univariate Zeitreihe und Vorhersage mittels ARIMA."}
+```{r, echo=FALSE, fig.cap="Abb. 11: Eine univariate Zeitreihe samt Vorhersage mittels ARIMA."}
 g1 <- autoplot(AirPassengers)
 fit <- auto.arima(AirPassengers)
 g2 <- autoplot(forecast(fit))
@@ -332,7 +332,7 @@ Das Ziel könnte aber auch sein, etwas über die Welt herauszufinden,  in diesem
 Je nachdem, was uns primär interessiert - die Genauigkeit der Vorhersage oder ein erklärendes Modell -, werden wir den Schwerpunkt auf unterschiedliche Methoden legen.
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Verkaufsspreis von Anwesen und 6 Einflussvariablen."}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 12: Verkaufsspreis von Anwesen und 6 Einflussvariablen."}
 ames <- read_csv("ames_housing_train.csv")
 ames_part <- ames %>% select(SalePrice,GrLivArea,FullBath,TotRmsAbvGrd,GarageYrBlt,GarageCars,GarageArea) %>% filter(GrLivArea < 4000) 
 ames_part %>% ggpairs()
@@ -345,7 +345,7 @@ ames_part %>% ggpairs()
 Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. 13a):
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 13: Regression des Verkaufspreises auf Wohnfläche "}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 13: Regression des Verkaufspreises auf Wohnfläche. 13a: der Prädiktor ist die Wohnfläche. 13b: Der Prädiktor ist das Quadrat der Wohnfläche."}
 fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
 preds1 <- predict(fit1, se = T)
 df <- ames_part %>% mutate(pred1 = preds1$fit,
@@ -369,19 +369,19 @@ grid.arrange(g1,g2, ncol=2)
 
 ```
 
-Hier wurde eine einfache lineare Regression des Verkaufspreises auf die Wohnfläche gerechnet. Die Gerade zeigt das gefittete Modell: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 107 Dollar (beta in der Überschrift der Grafik). Das R² im Titel sagt uns, wie gut das Modell auf diese Daten (Trainingsdaten! s.o.) passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt.
+Hier wurde eine einfache lineare Regression des Verkaufspreises auf die Wohnfläche gerechnet. Die Gerade zeigt das gefittete Modell: Mit jedem zusätzlichen Quadratfuss Wohnfläche steigt der Verkaufspreis in der Stichprobe um etwa 111 Dollar (beta in der Überschrift der Grafik). Das R² im Titel sagt uns, wie gut das Modell auf diese Daten (Trainingsdaten! s.o.) passt: Hier wurde 50% der Varianz in den Verkaufspreisen durch die Varianz in der Wohnfläche erklärt.
 
-Wenn wir auf Abb TBD schauen, können wir uns fragen, ob hier eine Gerade wirklich am besten die Daten beschreibt. Es sieht aus, als müsste eine Parabel besser passen, oder? Wir können, ohne das lineare Modell zu verlassen, eine Parabel fitten, indem wir die Prädiktor-Variable Wohnfläche quadrieren, wie in Abb TBD geschehen. Optisch sieht das besser aus, der _goodness of fit_ - Wert R² ist aber tatsächlich niedriger.
+Wenn wir auf Abb. 13a schauen, können wir uns fragen, ob hier eine Gerade wirklich am besten die Daten beschreibt. Es sieht aus, als müsste eine Parabel besser passen, oder? Wir können, ohne das lineare Modell zu verlassen, eine Parabel fitten, indem wir die Prädiktor-Variable Wohnfläche quadrieren, wie in Abb. 13b geschehen. Optisch sieht das besser aus, der _goodness of fit_ - Wert R² ist aber tatsächlich niedriger.
 
-Wie erklärend ist das Modell in Abb.TBD? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb TBD und TBD vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? 
+Wie erklärend ist das Modell in Abb. 13b? Hier steigt der Verkaufspreis mit dem Quadrat der Wohnfläche. Das ist immer noch eine stark abstrahierende Aussage. Wenn wir Abb 13a und 13b vergleichen, können wir auf den Gedanken kommen, dass im unteren Range der Wohnflächenwerte der lineare Fit besser ist, im oberen der quadratische. Wir können zwei getrennte Regressionen rechnen, und kämen zu einem Ergebnis der Art: "Für niedrigere Wohnflächen ist der Zusammenhang mit dem Verkaufspreis eher linear, für grössere eher quadratisch". Vielleicht gehen wir aber noch weiter, und zerlegen den Wertebereich des Prädiktors in 5, 10, 20 Teile? 
 
 
 ## Vorhersagen
 
-Wenn wir denken, der zu beschreibende Zusammenhang ist intrinsisch nichtlinear, macht es Sinn, die Grenzen des verwendeten Frameworks zu erweitern. Wir können viele lokale Regressionen rechnen (die ihrerseits noch linear sind), oder wir wählen direkt nichtlineare Methoden wie Regression Splines.
-In Abb. TBD wurden drei Regression Splines gefittet, die sich durch ihren Grad an Flexibilität unterscheiden:
+Wenn wir denken, der zu beschreibende Zusammenhang ist intrinsisch nichtlinear, macht es Sinn, die Grenzen des verwendeten Frameworks zu erweitern. Wir können viele lokale Regressionen rechnen (die ihrerseits noch linear sind), oder wir wählen direkt nichtlineare Methoden wie _Regression Splines_.
+In Abb. 14 wurden drei Regression Splines gefittet, die sich durch ihren Grad an Flexibilität unterscheiden:
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 14: Regression splines mit unterschiedlicher Flexibilität."}
 fit1 <- lm(SalePrice ~ bs(GrLivArea, knots = c(20000)), data = ames_part)
 preds1 <- predict(fit1, se = T)
 fit2 <- lm(SalePrice ~ bs(GrLivArea, df = 15), data = ames_part)
@@ -417,16 +417,15 @@ Wir sehen, dass mit zunehmender Flexibilität der _Goodness of fit_ auf den _Tra
 Wie immer ist aber der Fit auf den Testdaten, worauf es ankommt. Nehmen wir einmal an, das Modell in der Mitte hätte sich in der Kreuzvalidierung als das beste erwiesen (weshalb wir davon ausgehen, dass es auch für die Testdaten die beste Performance zeigen wird).  Dann ist die Frage: Ist uns der verbesserte Fit gegenüber der linearen Regression wichtig genug, um auf den explanatorischen Wert der Regression zu verzichten?
 
 In diesem Beispiel ist der Performancegewinn wahrscheinlich nicht deutlich genug, als dass wir uns diese Frage wirklich stellen würden - der Zusammenhang ist offenbar "linear genug" für lineare Regression. Was, wenn die wahren Daten definitiv nichtlinear sind?
-Abb. TBD zeigt ein solches Beispiel. Nehmen wir wieder an, wir sähen jeweils pro Modell den besten Fit, ermittelt durch 10-fache Kreuzvalidierung - links für lineare Regression, rechts für die Familie der Regression Splines. Für welches Modell entscheide ich mich? Die Zahlen sind eine Sache; jetzt kommt es darauf an, welches Ziel ich mit der Analyse verfolge.
+Abb. 15 zeigt ein solches Beispiel. Nehmen wir wieder an, wir sähen jeweils pro Modell den besten Fit, ermittelt durch 10-fache Kreuzvalidierung - links für lineare Regression, rechts für die Familie der Regression Splines. Für welches Modell entscheide ich mich? Die Zahlen sind eine Sache; jetzt kommt es darauf an, welches Ziel ich mit der Analyse verfolge.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 15: Lineare Regression vs. Regression Splines bei einem intrinsisch nichtlinearen Datensatz."}
 set.seed(7777)
 x <- seq(from = 1, to = 3, by = 0.1)
 x <- sample(x, 200, replace = TRUE)
 f <- function(x) x^3 - 3*x^2 + 2*x
 y <- exp(x) + rnorm(100, sd = 3)
 df <- data_frame(x,y)
-ggplot(df, aes(x,y)) + geom_point()
 fit0 <- lm(y ~ x, data = df)
 preds0 <- predict(fit0, se = T)
 df <- df %>% mutate(pred0 = preds0$fit,
@@ -453,16 +452,16 @@ grid.arrange(g0,g1, ncol=2)
 ## Modellselektion
 
 Im vorangehenden Abschnitt haben wir nur jeweils einen einzigen Prädiktor betrachtet.
-In der Regel aber wird mein Dataset aber mehrere potentielle Prädiktoren enthalten - in der Zeit von Big Data ggf. extrem viele! Wie wähle ich die wichtigsten aus?
+In der Regel aber wird mein Datensatz aber mehrere potentielle Prädiktoren enthalten - in der Zeit von Big Data ggf. extrem viele! Wie wähle ich die wichtigsten aus?
 Hier wird der Gegensatz zwischen Erklären und Vorhersagen vielleicht noch augenfälliger.
 Das gleiche gilt für die Notwendigkeit, die finale Performance auf dem Test Set zu evaluieren.
 Wenn ich nur genügend Prädiktoren habe, kann ich alle Daten perfekt fitten. Ganz nach dem berühmten John-von-Neumann-Zitat
 
 >> With four parameters I can fit an elephant, and with five I can make him wiggle his trunk.
 
-Kehren wir zurück zu unserem Immobilien-Beispiel. Wir können den Verkaufspreis mit einem Entscheidungsbaum vorhersagen. Dabei beschränken wir uns auf das Subset von Prädiktoren, das auch in Abb. TBD gezeigt wird. Wenn ich auf dem Training Set mittels Kreuzvalidierung die besten Parametersettings bestimme, erhalte ich den in Abb. gezeigten Baum. Hier werden 4 von 6 möglichen Variablen zur Vorhersage verwendet. Der resultierende Split ist der, bei dem wir aufgrund der Kreuzvalidierung den niedigsten Fehler auf dem Test Set erwarten. 
+Kehren wir zurück zu unserem Immobilien-Beispiel. Wir können den Verkaufspreis mit einem Entscheidungsbaum vorhersagen. Dabei beschränken wir uns auf das Subset von Prädiktoren, das auch in Abb. 12 gezeigt wird. Wenn ich auf dem Training Set mittels Kreuzvalidierung die besten Parametersettings bestimme, erhalte ich den in Abb. 16a gezeigten Baum. Hier werden 4 von 6 möglichen Variablen zur Vorhersage verwendet. Der resultierende Split ist der, bei dem wir aufgrund der Kreuzvalidierung den niedigsten Fehler auf dem Test Set erwarten. 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 16: Entscheidungsbäume. Abb. 16a: Der durch Kreuzvalidierung ermittelte Baum. Abb. 16b: Ein Baum mit 1129 Edknoten erklärt die Trainingsdaten nahezu perfekt, wird aber kläglich an den Testdaten scheitern."}
 par(mfrow=c(1,2))
 library(tree)
 fit <- tree(SalePrice ~ ., data = ames_part)
@@ -476,37 +475,49 @@ plot(fit)
 par(mfrow=c(1,1))
 ```
 
-Was passiert, wenn wir den Algorithmus anweisen, keine Rücksicht auf Generalisierbarkeit zu nehmen, sondern die gegebenen Trainingsdaten optimal voherzusagen? Der resultierende Baum (Abb. TBD) lässt sich schon nicht einmal mehr beschriften, da er komplett unlesbar wäre. Er hat 1129 Blätter (Endknoten) - bei ingesamt 1456 Items im Dataset! Das Training Set wird auf diese Weise hervorragend beschrieben - aber keine Chance, dass ein derart verästelter Baum auch das Test Set adäquat beschreibt. Was wir hier sehen, ist das grosse _don't do it_ der Data Scientists: _Overfitting_. _Don't overfit your training data._
+Was passiert, wenn wir den Algorithmus anweisen, keine Rücksicht auf Generalisierbarkeit zu nehmen, sondern die gegebenen Trainingsdaten optimal voherzusagen? Der resultierende Baum (Abb. 16b) lässt sich schon nicht einmal mehr beschriften, da er komplett unlesbar wäre. Er hat 1129 Endknoten - bei ingesamt 1456 Items im Datensatz! Das Training Set wird auf diese Weise hervorragend beschrieben - aber keine Chance, dass ein derart verästelter Baum auch das Test Set adäquat beschreibt. Was wir hier sehen, ist das grosse _don't do it_ der Data Scientists: _Overfitting_. _Don't overfit your training data._
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+Zurück zu unserem durch Kreuzvalidierung gewählten Baum. Wie erklärend ist das Modell? Entscheidungsbäume werden im allgemeinen als gut kommunizierbar und leidlich explanatorisch angesehen. Das gilt aber umso weniger, je mehr Splits der Baum hat und je mehr ein- und dieselbe Variable für verschiedene Splits wiederverwendet wird. 
+Wir können den Vorhersagefehler gegen die Anzahl der Blätter plotten und uns für den Baum mit dem besten Trade-Off entscheiden. Im vorliegenden Beispiel z.B. für Baum mit 5 Endknoten (Abb. 17), der gleichermassen Einsicht vermittelt und die Daten gut beschreibt.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 17: Der Baum mit 5 Endknoten ist ein guter Kompromiss zwischen Minimierung des Vorhersagefehlers und explanatorischem Wert. 17a: Vorhersagefehler, abhängig von der Anzahl der Endknoten. 17b: Der Baum mit 5 Knoten."}
 par(mfrow= c(1,2))
 fit <- tree(SalePrice ~ ., data = ames_part)
 cv_fit <- cv.tree(fit)
-plot(cv_fit$size, cv_fit$dev, type='b')
+plot(cv_fit$size, cv_fit$dev, type='b', xlab = "Anzahl Endknoten", ylab="Deviance")
 plot(prune.tree(fit, best=5))
 text(prune.tree(fit, best=5))
 par(mfrow= c(1,1))
 ```
 
-Zurück zu unserem durch Kreuzvalidierung gewählten Baum. Wie erklärend ist das Modell? Entscheidungsbäume gelten insgesamt als gut kommunizierbar und auch als explanatorisch. Das gilt umso weniger, je mehr Splits der Baum hat und je mehr ein- und dieselbe Variable (an verschiedenen Stellen ) wiederverwendet wird. 
-Wir können den Vorhersagefehler gegen die Anzahl der Blätter plotten und uns für den Baum mit dem besten Trade-Off entscheiden. Im vorliegenden Beispiel z.B. für Baum mit 5 Blättern (Abb. TBD),  der gleichermassen Einsicht vermittelt und die Daten gut beschreibt.
 
-Was,wenn ich nicht erklären will, sondern tatsächlich einfach die bestmögliche Vorhersage brauche? Dann werde ich dezidiert eine der Methoden nehmen, die erfahrungsgemäss den Shootout der Algorithmen gewinnen (z.B. bei Data Science Competitions wie auf Kaggle). Am erfolgreichsten sind in der Regel Ensemble-Methoden, d.h. Methoden, die einen Algorithmus mehrfach anwenden und das Ergebnis mitteln. Im Bereich der Entscheidungsbäume sind das Random Forests und Boosting. Gemeinsam ist beiden Ansätzen (Random Forests und Boosting), dass sie die guten Ergebnisse gerade dadurch erzielen, dass man es "sich schwerer macht", um dadurch ein robusteres, von der Zufälligkeit der Trainingsdaten unabhängigeres Ergebnis zu erzielen. Im Falle von Random Forests geschieht das dadurch, dass nicht jeder vorhandene Prädiktor für einen anstehenden Split in Erwägung gezogen wird - die Kandidaten werden jeweils zufällig ausgewählt, woraus sich der Name "Random Forest" herleitet.
-Es sich schwerer machen, um besser zu werden: das Thema werden wir im nächsten Abschnitt, beim Deep Learning, wieder antreffen.
+Was,wenn ich nicht erklären will, sondern tatsächlich einfach die bestmögliche Vorhersage brauche? Dann werde ich dezidiert eine der Methoden nehmen, die erfahrungsgemäss den Shootout der Algorithmen gewinnen (z.B. bei Data Science Competitions wie auf Kaggle). 
+
+Am erfolgreichsten sind in der Regel Ensemble-Methoden, d.h. Methoden, die einen Algorithmus mehrfach anwenden und das Ergebnis mitteln. Im Bereich der Entscheidungsbäume sind das _Random Forests_ und _Boosting_. 
+
+Gemeinsam ist beiden Ansätzen, dass sie die guten Ergebnisse gerade dadurch erzielen, dass man es "sich schwerer macht", um dadurch ein robusteres, von der Zufälligkeit der Trainingsdaten unabhängigeres Ergebnis zu erzielen. Im Falle von _Random Forests_ geschieht das dadurch, dass nicht jeder vorhandene Prädiktor für einen anstehenden Split in Erwägung gezogen wird - die Kandidaten werden jeweils zufällig ausgewählt, woraus sich der Name "Random Forest" herleitet. Im Falle von _Boosting_ ist es eine Kombination "schwacher Lerner", die in Synergie ein sehr gutes Ergebnis erzielt.
+
+Es sich schwerer machen, um besser zu werden: Das ist ein Motto, unter das man viele erfolgreiche Methoden des Machine Learnings stellen könnte. Das gilt auch für das schon mehrmals angekündigte Deep Learning, das jetzt endlich tatsächlich seinen Auftritt hat.
 
 
-## Heute noch Magic, morgen Mainstream: Deep Learning
+## Heute _magic_, morgen _mainstream_: Deep Learning
 
-Wenn wir von Data Science Competitions sprechen, dabei den Begriff etwas lockerer fassen und auf Machine Learning bis zu Künstlicher Intelligenz ausweiten, kommen wir an Deep Learning nicht vorbei. Wir haben schon gesagt, wo Deep Learning heute am meisten Anwendung findet und in der Regel die Methode der Wahl ist: Objekterkennung, Spracherkennung, maschinelle Übersetzung, Sprach- und Musikgenerierung, Generierung von Produktempfehlungen... bis hin zur Generierung von "Fake evidence" (Bilder, Audios, Videos, die es nie gegeben hat, siehe Literatur).
-Was aber ist Deep Learning, und wie funktioniert das? Deep Learning ist nichts als ein neuer Begriff für etwas, das es seit der Mitte des letzten Jahrhunderts gibt und dessen wichtigste Konzepte in den 1980er/1990er Jahren entwickelt wurden: künstliche neuronale Netze, vage an der Architektur biologischer Neuronen orientiert, mit einer input layer, einem output layer und dazwischen mindestens einem, oft mehreren _hidden layers_. Diese _hidden layers_ sind es, die die Netze beim Deep Learning _deep_ machen.
+Wenn wir von Data Science Competitions sprechen, dabei den Begriff etwas lockerer fassen und auf Machine Learning bis zu Künstlicher Intelligenz ausweiten, kommen wir an Deep Learning nicht vorbei. Wir haben schon gesagt, wo Deep Learning heute am meisten Anwendung findet und in der Regel die Methode der Wahl ist: Objekterkennung, Spracherkennung, maschinelle Übersetzung, Sprach- und Musikgenerierung, Generierung von Produktempfehlungen... bis hin zur Generierung von _fake evidence_ (Bilder, Audios, Videos, die es nie gegeben hat [17]).
 
-```{r, out.width = "400px"}
+Was aber ist Deep Learning, und wie funktioniert das? Deep Learning ist nichts als ein neuer Begriff für etwas, das es seit der Mitte des letzten Jahrhunderts gibt und dessen wichtigste Konzepte in den 1980er/1990er Jahren entwickelt wurden: künstliche neuronale Netze, vage an der Architektur biologischer Neuronen orientiert, mit einem input layer, einem output layer und dazwischen mindestens einem, oft mehreren _hidden layers_. Diese _hidden layers_ sind es, die die Netze beim Deep Learning _deep_ machen.
+
+```{r, echo=FALSE, out.width = "400px", fig.cap="Abb. 18: Schematische Struktur eines deep neural network. Die Anzahl der hidden layers ist variabel. Aus: [15]."}
 knitr::include_graphics("deep_nn.png")
 ```
 
 Was Deep Learning so erfolgreich macht, ist aber nicht die blosse Aneinanderreihung von Layern. In den _hidden layers_ bilden sich Strukturen, die wichtige Eigenschaften des Input-Objekts abbilden und deren Synthese wiederum neue Strukturen generiert. Deswegen sind die Netze auch keine amorphe Masse von "computing units", sondern haben jeweils eine der Aufgabenstellung angemessene Architektur. 
-Im Bereich Objekterkennung z.B. werden _CNNs_ eingesetzt, _convolutional neural networks_. Abb. TBD zeigt ein Beispiel.
+
+Im Bereich Objekterkennung - und klassifizierung z.B. werden _CNNs_ eingesetzt, _convolutional neural networks_. Abb. 19 zeigt ein Beispiel. Das Netz soll sagen, ob das Bild im Input z.B. eine Person, ein Tier, ein Auto etc. ist. Was es bekommt, sind aber lediglich Pixel! Wie kann das funktionieren? Die sukzessive Extraktion komplexerer Strukturen ist die Aufgabe der _hidden layers_. Zum Beispiel so: Im ersten Layer werden Ecken identifiziert, im zweiten Konturen, im dritten Teile von Objekten (eine Nase, ein Arm...), im vierten
+
+```{r, echo=FALSE, out.width = "400px", fig.cap="Abb. 19: Beispielhafte Darstellung der Funktion von hidden layers bei einem convolutional neural network. Aus: [12]."}
+knitr::include_graphics("features.png")
+```
 
 
 
@@ -549,7 +560,5 @@ Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die
 [14] MIT, Deep Learning for self-driving cars. http://selfdrivingcars.mit.edu/
 [15] University of Waterloo, Deep Learning. https://uwaterloo.ca/data-science/deep-learning
 [16] Ames Housing Dataset, http://www.amstat.org/publications/jse/v19n3/decock.pdf.
-
-
-http://www.economist.com/news/science-and-technology/21724370-fake-news-you-aint-seen-nothing-yet-generating-convincing-audio-and-video-fake
+[17] http://www.economist.com/news/science-and-technology/21724370-fake-news-you-aint-seen-nothing-yet-generating-convincing-audio-and-video-fake
 
