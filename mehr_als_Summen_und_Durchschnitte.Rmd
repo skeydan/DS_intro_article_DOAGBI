@@ -1,8 +1,11 @@
 ---
-title: "Mehr als Summen und Durchschnitte: Data Science von Statistik bis Deep Learning"
-output: html_document
-html_document: 
-    fig_caption: yes
+title: 'Mehr als Summen und Durchschnitte: Data Science von Statistik bis Deep Learning'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+html_document:
+  fig_caption: yes
 ---
 
 ```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
@@ -30,9 +33,9 @@ opts_chunk$set(cache=TRUE)
 
 ## Daten
 
-Daten sind gut. Sie liefern uns Informationen, wieviele Einheiten wir verkauft haben; wie unser Umsatz war; wie es mit der Zufriedenheit unserer Kunden aussieht. Welche Werbebanner am meisten geklickt wurden. Welche unserer Strategien am besten funktioniert hat. Woraus wir unsererseits folgern können, wie wir jetzt am besten weiter vorgehen. Daten, konvertiert in Erkenntnisgewinn - und in finanziellen Gewinn.
+Daten sind gut. Sie liefern uns Informationen, wieviele Einheiten wir verkauft haben; wie unser Umsatz war; wie es mit der Zufriedenheit unserer Kunden aussieht. Welche Werbebanner am meisten geklickt wurden. Welche unserer Strategien am besten funktioniert hat. Woraus wir unsererseits folgern können, wie wir jetzt am besten weiter vorgehen. Daten, konvertiert in Erkenntnisgewinn - und finanziellen Gewinn.
 
-Daten sind schlecht. Daten sind "zuviel", um mit dem menschlichen Auge erfasst werden zu können. Wir müssen sie irgendwie zusammenfassen, vereinfachen. Wieviel Vereinfachung ist ausreichend? Einen Schritt zurück: Was überhaupt ist eine sinnvolle Vereinfachung, ein angemessenes "summary" unserer Daten? Wie aussagekräftig ist der Mittelwert, den ich in den meisten Reports angezeigt bekomme?
+Daten sind schlecht. Daten sind "zuviel", um mit dem menschlichen Auge erfasst werden zu können. Wir müssen sie irgendwie zusammenfassen, vereinfachen. Wieviel Vereinfachung ist ausreichend? Einen Schritt zurück: Was überhaupt ist eine sinnvolle Vereinfachung, ein angemessenes _summary_ unserer Daten? Wie aussagekräftig ist der Mittelwert, den ich in den meisten Reports angezeigt bekomme?
 
 Daten sind Vergangenheit, _in the past_. Vergangene Aktienkurse; vergangene Verkaufszahlen; vergangene Adclicks. Interessiert mich der Schnee von gestern? Ja - weil ich auf den Schnee von morgen schliessen möchte! Wie kann ich das machen? Wie kann ich die in den Daten enthaltene Information optimal nutzen und die relevanten Variablen "herausfischen"? Hier ist das Business-Know-How wichtig - aber nicht alles. Methoden aus Data Science, Machine Learning und Statistik warten nur darauf, uns zu unterstützen.
 
@@ -149,13 +152,11 @@ g1 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) 
 sorted <- sort(betas)
 df <- data_frame(x = (1:(length(sorted)) - 0.5)/length(sorted), y = sorted)
 g2 <- ggplot(df, aes(x=x, y=y)) + geom_point() + scale_x_continuous(c(0.0,1.0)) +
-  ggtitle("Datensatz B")
+  ggtitle("Datensatz C")
 grid.arrange(g1, g2, ncol= 2)
 ```
 
-Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.25, 0.5, 0.75) ablesen.
-
-Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. 5a und Abb. 5b: Links haben wir Datensatz B, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
+Von den Quantilplots können wir nicht nur problemlos die wichtigen Quantile (0.25, 0.5, 0.75) ablesen: Wir haben zudem durch die Steigung ein gutes Gefühl für die Dichte der Daten. Vergleichen wir die beiden Quantilplots in Abb. 5a und Abb. 5b: Links haben wir Datensatz B, bei dem die niedrigen Werte eng zusammenliegen. Die sehr flache Steigung links des Medians zeigt, dass die Hälfte der Daten zusammenkommt, ohne dass der Wert merklich steigt. Nach dem Median nimmt die Kurve zunehmend Fahrt auf: Jetzt werden mit hinzukommenden Daten immer grössere Wertabstände überwunden.
 
 Ganz anders Datensatz C, das nahezu eine S-Kurve beschreibt. Die Steigung ist maximal in der Gegend um den Median herum. An beiden Enden liegen mehr Werte als in der Mitte, daher die flache Steigung an den Enden des S.
 
@@ -256,14 +257,14 @@ Abb. 10a zeigt das Ergebnis für einen Datensatz von Pixelbereichen eines Satell
 PCA ist eine lineare Methode. Nichtlineare Daten lassen sich mit einer relativ neuen, nichtlinearen, nichtdeterministischen Methode namens t-SNE (_t-Distributed Stochastic Neighbor Embedding_) besser visualisieren. Abb. 10b zeigt das Eregebnis von t-SNE. Jetzt sind alle 6 in den Daten vorhandenen Klassen sehr schön erkennbar.
 
 ```{r, echo=FALSE, message=FALSE, fig.cap="Abb. 10: Reduktion 36-dimensionaler Daten durch PCA resp. t-SNE. 10a: PCA. 10b: t-SNE."}
-par(mfrow= c(1,2))
+par(mfrow= c(1,2), mai=c(0,0,0,0.2))
 # https://archive.ics.uci.edu/ml/datasets/Statlog+%28Landsat+Satellite%29
 sat <- read_delim("sat.trn", delim = " ", col_names = FALSE)
 sat_data <- sat %>% select(-X37)
 pca_out <- princomp(sat_data)
 tsne_out <- Rtsne(sat_data) 
-plot(pca_out$scores[,1:2], col=sat$X37)
-plot(tsne_out$Y,col=sat$X37)
+plot(pca_out$scores[,1:2], col=sat$X37, xlab = "", ylab="", xaxt='n', yaxt='n')
+plot(tsne_out$Y,col=sat$X37, xlab = "", ylab="", xaxt='n', yaxt='n')
 par(mfrow= c(1,1))
 ```
 
@@ -303,10 +304,10 @@ Das geht so: Ich unterteile das Training Set in _n_ Subsets (meist 5 oder 10). N
 Wie funktioniert die Trennung in Training Set und Test Set? Im Normalfall einfach als Zufallsauswahl.
 Anders verhält es sich bei Zeitreihen, also Daten, die intrinsisch zeitlich geordnet sind. Hier würde man jeweils zusammenhängende Zeiträume für das Training Set und für das Test Set wählen.
 
-Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Datasatz gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
+Auf die Gefahr, die Wiederholung zu übertreiben: Die Performance eines Modells wird abschliessend immer nur am Test Set evaluiert. Wenn im folgenden, der Kürze halber, zu einer Methode nur ein Datensatz gezeigt wird, ist immer das Training Set gemeint, das Set, auf dem wir das Modell fitten. 
 
 Jetzt aber schauen wir erst einmal, was es mit dem Gegensatz _Vorhersagen vs. Erklären_ auf sich hat.
-.
+
 
 ## Vorhersagen vs. Erklären
 
@@ -320,7 +321,7 @@ Im abgebildeten Beispiel wurde ARIMA verwendet, die wahrscheinlich meistverwende
 ```{r, echo=FALSE, fig.cap="Abb. 11: Eine univariate Zeitreihe samt Vorhersage mittels ARIMA."}
 g1 <- autoplot(AirPassengers)
 fit <- auto.arima(AirPassengers)
-g2 <- autoplot(forecast(fit))
+g2 <- autoplot(forecast(fit)) + theme(legend.position="bottom")
 grid.arrange(g1,g2, ncol=2)
 ```
 
@@ -345,7 +346,7 @@ ames_part %>% ggpairs()
 Wenn es mir primär ums Verstehen geht, sind lineare Modelle optimal - vorausgesetzt, die Daten lassen sich mit einem linearen Modell hinreichend gut abbilden. Warum? Wenn ich einen linearen Zusammenhang habe, kann ich die Schlussfolgerung ziehen: Erhöhung von x um eine Einheit führt zu Erhöhung von y um eine Einheit. Schauen wir uns das in einem Beispiel an (Abb. 13a):
 
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 13: Regression des Verkaufspreises auf Wohnfläche. 13a: der Prädiktor ist die Wohnfläche. 13b: Der Prädiktor ist das Quadrat der Wohnfläche."}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 13: Regression des Verkaufspreises auf Wohnfläche. 13a: Der Prädiktor ist die Wohnfläche. 13b: Der Prädiktor ist das Quadrat der Wohnfläche."}
 fit1 <- lm(SalePrice ~ GrLivArea, data = ames_part)
 preds1 <- predict(fit1, se = T)
 df <- ames_part %>% mutate(pred1 = preds1$fit,
@@ -417,7 +418,7 @@ Wir sehen, dass mit zunehmender Flexibilität der _Goodness of fit_ auf den _Tra
 Wie immer ist aber der Fit auf den Testdaten, worauf es ankommt. Nehmen wir einmal an, das Modell in der Mitte hätte sich in der Kreuzvalidierung als das beste erwiesen (weshalb wir davon ausgehen, dass es auch für die Testdaten die beste Performance zeigen wird).  Dann ist die Frage: Ist uns der verbesserte Fit gegenüber der linearen Regression wichtig genug, um auf den explanatorischen Wert der Regression zu verzichten?
 
 In diesem Beispiel ist der Performancegewinn wahrscheinlich nicht deutlich genug, als dass wir uns diese Frage wirklich stellen würden - der Zusammenhang ist offenbar "linear genug" für lineare Regression. Was, wenn die wahren Daten definitiv nichtlinear sind?
-Abb. 15 zeigt ein solches Beispiel. Nehmen wir wieder an, wir sähen jeweils pro Modell den besten Fit, ermittelt durch 10-fache Kreuzvalidierung - links für lineare Regression, rechts für die Familie der Regression Splines. Für welches Modell entscheide ich mich? Die Zahlen sind eine Sache; jetzt kommt es darauf an, welches Ziel ich mit der Analyse verfolge.
+Abb. 15 zeigt ein solches Beispiel. Nehmen wir wieder an, wir sähen jeweils pro Modell den besten Fit, ermittelt durch 10-fache Kreuzvalidierung - links für lineare Regression, rechts für die Familie der Regression Splines. Für welches Modell entscheide ich mich? Die Zahlen sind eine Sache; jetzt kommt es wirklich darauf an, wo meine Prioritäten liegen!
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 15: Lineare Regression vs. Regression Splines bei einem intrinsisch nichtlinearen Datensatz."}
 set.seed(7777)
@@ -452,7 +453,7 @@ grid.arrange(g0,g1, ncol=2)
 ## Modellselektion
 
 Im vorangehenden Abschnitt haben wir nur jeweils einen einzigen Prädiktor betrachtet.
-In der Regel aber wird mein Datensatz aber mehrere potentielle Prädiktoren enthalten - in der Zeit von Big Data ggf. extrem viele! Wie wähle ich die wichtigsten aus?
+In der Regel aber wird mein Datensatz mehrere potentielle Prädiktoren enthalten - in der Zeit von Big Data ggf. extrem viele! Wie wähle ich die wichtigsten aus?
 Hier wird der Gegensatz zwischen Erklären und Vorhersagen vielleicht noch augenfälliger.
 Das gleiche gilt für die Notwendigkeit, die finale Performance auf dem Test Set zu evaluieren.
 Wenn ich nur genügend Prädiktoren habe, kann ich alle Daten perfekt fitten. Ganz nach dem berühmten John-von-Neumann-Zitat
@@ -462,7 +463,7 @@ Wenn ich nur genügend Prädiktoren habe, kann ich alle Daten perfekt fitten. Ga
 Kehren wir zurück zu unserem Immobilien-Beispiel. Wir können den Verkaufspreis mit einem Entscheidungsbaum vorhersagen. Dabei beschränken wir uns auf das Subset von Prädiktoren, das auch in Abb. 12 gezeigt wird. Wenn ich auf dem Training Set mittels Kreuzvalidierung die besten Parametersettings bestimme, erhalte ich den in Abb. 16a gezeigten Baum. Hier werden 4 von 6 möglichen Variablen zur Vorhersage verwendet. Der resultierende Split ist der, bei dem wir aufgrund der Kreuzvalidierung den niedigsten Fehler auf dem Test Set erwarten. 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 16: Entscheidungsbäume. Abb. 16a: Der durch Kreuzvalidierung ermittelte Baum. Abb. 16b: Ein Baum mit 1129 Edknoten erklärt die Trainingsdaten nahezu perfekt, wird aber kläglich an den Testdaten scheitern."}
-par(mfrow=c(1,2))
+par(mfrow=c(1,2), cex=0.4)
 library(tree)
 fit <- tree(SalePrice ~ ., data = ames_part)
 plot(fit)
@@ -472,7 +473,7 @@ library(tree)
 fit <- tree(SalePrice ~ ., data = ames_part, control=tree.control(nobs = nrow(ames_part), mincut=1, minsize = 2, mindev = 0))
 plot(fit)
 #summary(fit)
-par(mfrow=c(1,1))
+par(mfrow=c(1,1), cex=1)
 ```
 
 Was passiert, wenn wir den Algorithmus anweisen, keine Rücksicht auf Generalisierbarkeit zu nehmen, sondern die gegebenen Trainingsdaten optimal voherzusagen? Der resultierende Baum (Abb. 16b) lässt sich schon nicht einmal mehr beschriften, da er komplett unlesbar wäre. Er hat 1129 Endknoten - bei ingesamt 1456 Items im Datensatz! Das Training Set wird auf diese Weise hervorragend beschrieben - aber keine Chance, dass ein derart verästelter Baum auch das Test Set adäquat beschreibt. Was wir hier sehen, ist das grosse _don't do it_ der Data Scientists: _Overfitting_. _Don't overfit your training data._
@@ -482,13 +483,13 @@ Zurück zu unserem durch Kreuzvalidierung gewählten Baum. Wie erklärend ist da
 Wir können den Vorhersagefehler gegen die Anzahl der Blätter plotten und uns für den Baum mit dem besten Trade-Off entscheiden. Im vorliegenden Beispiel z.B. für Baum mit 5 Endknoten (Abb. 17), der gleichermassen Einsicht vermittelt und die Daten gut beschreibt.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Abb. 17: Der Baum mit 5 Endknoten ist ein guter Kompromiss zwischen Minimierung des Vorhersagefehlers und explanatorischem Wert. 17a: Vorhersagefehler, abhängig von der Anzahl der Endknoten. 17b: Der Baum mit 5 Knoten."}
-par(mfrow= c(1,2))
+par(mfrow= c(1,2), cex=0.4)
 fit <- tree(SalePrice ~ ., data = ames_part)
 cv_fit <- cv.tree(fit)
 plot(cv_fit$size, cv_fit$dev, type='b', xlab = "Anzahl Endknoten", ylab="Deviance")
 plot(prune.tree(fit, best=5))
 text(prune.tree(fit, best=5))
-par(mfrow= c(1,1))
+par(mfrow= c(1,1), cex=1)
 ```
 
 
@@ -496,7 +497,7 @@ Was,wenn ich nicht erklären will, sondern tatsächlich einfach die bestmöglich
 
 Am erfolgreichsten sind in der Regel Ensemble-Methoden, d.h. Methoden, die einen Algorithmus mehrfach anwenden und das Ergebnis mitteln. Im Bereich der Entscheidungsbäume sind das _Random Forests_ und _Boosting_. 
 
-Gemeinsam ist beiden Ansätzen, dass sie die guten Ergebnisse gerade dadurch erzielen, dass man es "sich schwerer macht", um dadurch ein robusteres, von der Zufälligkeit der Trainingsdaten unabhängigeres Ergebnis zu erzielen. Im Falle von _Random Forests_ geschieht das dadurch, dass nicht jeder vorhandene Prädiktor für einen anstehenden Split in Erwägung gezogen wird - die Kandidaten werden jeweils zufällig ausgewählt, woraus sich der Name "Random Forest" herleitet. Im Falle von _Boosting_ ist es eine Kombination "schwacher Lerner", die in Synergie ein sehr gutes Ergebnis erzielt.
+Gemeinsam ist beiden Ansätzen, dass sie die guten Ergebnisse gerade dadurch erzielen, dass man es "sich schwerer macht", um dadurch ein robusteres, von der Zufälligkeit der Trainingsdaten unabhängigeres Ergebnis zu erzielen. Im Falle von _Random Forests_ geschieht das dadurch, dass nicht jeder vorhandene Prädiktor für einen anstehenden Split in Erwägung gezogen wird - die Kandidaten werden jeweils zufällig ausgewählt, woraus sich der Name "Random Forest" herleitet. Im Falle von _Boosting_ ist es eine Kombination "schwacher Lerner", die in Synergie ein sehr gutes Ergebnis erzielen.
 
 Es sich schwerer machen, um besser zu werden: Das ist ein Motto, unter das man viele erfolgreiche Methoden des Machine Learnings stellen könnte. Das gilt auch für das schon mehrmals angekündigte Deep Learning, das jetzt endlich tatsächlich seinen Auftritt hat.
 
@@ -511,26 +512,48 @@ Was aber ist Deep Learning, und wie funktioniert das? Deep Learning ist nichts a
 knitr::include_graphics("deep_nn.png")
 ```
 
+### Strukturen erkennen durch Feature-Generierung
+
 Was Deep Learning so erfolgreich macht, ist aber nicht die blosse Aneinanderreihung von Layern. In den _hidden layers_ bilden sich Strukturen, die wichtige Eigenschaften des Input-Objekts abbilden und deren Synthese wiederum neue Strukturen generiert. Deswegen sind die Netze auch keine amorphe Masse von "computing units", sondern haben jeweils eine der Aufgabenstellung angemessene Architektur. 
 
-Im Bereich Objekterkennung - und klassifizierung z.B. werden _CNNs_ eingesetzt, _convolutional neural networks_. Abb. 19 zeigt ein Beispiel. Das Netz soll sagen, ob das Bild im Input z.B. eine Person, ein Tier, ein Auto etc. ist. Was es bekommt, sind aber lediglich Pixel! Wie kann das funktionieren? Die sukzessive Extraktion komplexerer Strukturen ist die Aufgabe der _hidden layers_. Zum Beispiel so: Im ersten Layer werden Ecken identifiziert, im zweiten Konturen, im dritten Teile von Objekten (eine Nase, ein Arm...), im vierten
+Im Bereich Objekterkennung und -klassifizierung z.B. werden _CNNs_ eingesetzt, _Convolutional Neural Networks_. Abb. 19 zeigt ein Beispiel. Das Netz soll sagen, ob das Bild im Input z.B. eine Person, ein Tier, ein Auto etc. ist. Was es bekommt, sind aber lediglich Pixel! Wie kann das funktionieren? Die sukzessive Extraktion komplexerer Strukturen ist die Aufgabe der _hidden layers_. Zum Beispiel so: Im ersten Layer werden Kanten identifiziert, im zweiten Ecken und Konturen, im dritten Teile von Objekten (eine Nase, ein Arm...), und so weiter, bis am Ende die Klassifikation erfolgt: "Das ist eine Person". Dabei werden also sukzessive komplexere Features erkannt, ohne dass der Programmierer diese von aussen vorgegeben hätte.
 
-```{r, echo=FALSE, out.width = "400px", fig.cap="Abb. 19: Beispielhafte Darstellung der Funktion von hidden layers bei einem convolutional neural network. Aus: [12]."}
+```{r, echo=FALSE, out.width = "400px", fig.cap="Abb. 19: Beispielhafte Darstellung der Funktion von hidden layers bei einem Convolutional Neural Network. Aus: [12]."}
 knitr::include_graphics("features.png")
 ```
 
+### Sequenzen: Sprache & co.
 
+Was ist mit Daten, die eine inhärente sequentielle Struktur haben? Sprache, Zeitreihen, Musik...
+Das ist die Domäne der  _RNNs_, der _Recurrent Neural Networks_. RNNs haben zusätzlich zu der "Tiefenstruktur" noch eine weitere verborgene Struktur, den _hidden state_. Der _hidden state_ transportiert die Information über vorherige Inputs. Im Bereich der RNNs ist der _model zoo_, die Vielfalt existenter Architekturen, besonders gross. Die am meisten eingesetzte Architektur _as of today_  ist wahrscheinlich das _LSTM_, _Long Short Term Memory Network_.
+
+Eine sehr praxisrelevante Anwendung - wer hat noch nie Google Translate benutzt? - ist maschinelle Übersetzung. Hier sind nicht nur die Eingabedaten sequentiell, sondern auch die Ausgabedaten, was das Problem noch weiter kompliziert. Hier werden sog. _seq2seq_ Architekturen eingesetzt (Abb. 20), mit je einem RNN für den Input und den Output. In komplexeren Modellen als dem abgebildeten gibt es zudem einen Aufmerksamkeitsmechanismus, _attention_, der dem Netz sagt, welcher Teil des Inputs für welchen Teil des Outputs relevant ist.
+
+```{r, echo=FALSE, out.width = "400px", fig.cap="Abb. 20: seq2seq-Architektur für maschinelle Übersetzung. Aus: [13]."}
+knitr::include_graphics("rnn_translation.png")
+```
+
+
+### Deep Learning in der Praxis
+
+Eine Vielfalt von Aufgabenstellungen, Architekturen, Hyperparametern und Frameworks (über die wir aus Platzgründen ein anderes Mal sprechen müssen) - ist das nicht viel zu komplex, um im Alltag anwendbar zu sein? Ganz zu schweigen von der Rechenpower, die es braucht, die optimalen Hyperparameter-Settings zu finden, und der Menge an Trainingsdaten, mit der das Netz gefüttert werden muss?
+
+Erstaunlicherweise ist Deep Learning sehr viel "anwendbarer", als man meinen könnte. Passable Performance ist oft auch schon mit geringeren Datenmengen und überschaubarem Trainingsaufwand zu erreichen. Um das letzte an Performance "herauszukitzeln", verwendet man vortrainierte Modelle, die frei heruntergeladen werden können. Und auch konzeptuell ist vieles aus dem traditionellen Machine Learning aufs Deep Learning übertragbar: so zum Beispiel das oben erwähnte Prinzip des "es sich schwerer Machens", das im Deep Learning als _dropout_-Hyperparameter auftritt und das Ausmass bezeichnet, in dem Neuronen im Training zufällig "ausgeschaltet" werden. Auf diese Weise wird im Training _noise_ erzeugt, der zu einer besseren Generalisierung und damit auch zu besserer Performance auf neuen Daten führt.
+
+So haben Statistik, Machine Learning und Deep Learning, so unterschiedlich sie auf den ersten Blick wirken, doch ganz grundlegende konzeptuelle Gemeinsamkeiten, die ihren synergetischen Einsatz ganz natürlich erscheinen lassen.
 
 ## Literatur
 
 Literaturtipps zu Statistik, Visualisierung, Data Science, Deep Learning in ein paar Sätzen - das kann nur eine sehr subjektive, sehr eklektische Zusammenstellung von Pointern sein. 
-Ins Positive gewendet: Was folgt, sind aus meiner Sicht (_ein paar der_) Highlights des Feldes (der Felder, vielmehr): Bücher, die Spass machen zu lesen, Videos, die Spass machen zu schauen... etc.
+Ins Positive gewendet: Was folgt, sind aus meiner Sicht _ein paar_ der Highlights des Feldes (der Felder, vielmehr): Bücher, die Spass machen zu lesen, Videos, die Spass machen zu schauen... etc.
 
 ### Statistik und Visualisierung
 
 Natürlich gibt es eine Reihe hervorragender Einführungen in die Statistik, auf jedem gewünschten Niveau. Spannend sind vor allem neue Sichtweisen, die die letzten Jahre gebracht haben, u.a. als Folge der "Replikationskrise" in der Psychologie und der zunehmenden praktischen Anwendbarkeit Bayes'scher Statistik. Empfohlen seien hier z.B. die hervorragenden MOOCs "Statistical Inference" der Johns Hopkins Universität [5] und "Improving your statistical inferences" der TU Eindhoven [6].
 
-Welche Erkenntnisse sich aus der visuellen Aufbereitung von Daten ziehen lassen, zeigen sehr schön die Bücher des berühmten Statistikers John Tukey und seiner Mitautoren über explorative Datenanalyse. Als Beispiel sei hier "Graphical methods for data analysis" empfohlen [7]. Im Übergangsbereich zwischen Datenexploration und Grafikdesign liegen die auch optisch sehr ansprechenden Bücher von Edward Tufte, etwa das mit dem programmatischen Namen "Beautiful evidence" [1]. Der augenöffnende Essay über den "Cognitive Style of Powerpoint" ist frei als PDF verfügbar [2].
+Welche Erkenntnisse sich aus der visuellen Aufbereitung von Daten ziehen lassen, zeigen sehr schön die Bücher des berühmten Statistikers John Tukey und seiner Mitautoren über explorative Datenanalyse. Als Beispiel sei hier "Graphical methods for data analysis" empfohlen [7].
+
+Im Übergangsbereich zwischen Datenexploration und Grafikdesign liegen die auch optisch sehr ansprechenden Bücher von Edward Tufte, etwa das jüngste mit dem programmatischen Namen "Beautiful evidence" [1]. Der augenöffnende Essay über den "Cognitive Style of Powerpoint" ist frei als PDF verfügbar [2].
 
 
 ### Data Science und Machine Learning
@@ -540,25 +563,40 @@ Auch zum Thema Data Science gibt es einige hervorragende MOOCs, u.a. auch wieder
 ### Deep Learning 
 
 _Das_ Buch zu Deep Learning ist, Stand heute, das gleichnamige MIT Buch von Goodfellow et al. [12].
-Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die Einblicke in das rasante Geschehen auf dem Gebiet geben: so zum Beispiel "Natural Language Processing with Deep Learning" aus Stanford [13] oder "Deep Learning for self-driving cars" vom MIT [14]. Eine gleichzeitig gut zugängliche und gute Einführung in Deep Learning ist die Vorlesung von Ali Ghodsi von der University of Waterloo [15].
+Ansonsten sind es vor allem eine Reihe auf Youtube verfügbarer Vorlesungen, die Einblicke in das rasante Geschehen auf dem Gebiet geben: so zum Beispiel "Natural Language Processing with Deep Learning" aus Stanford [13] oder "Deep Learning for self-driving cars" vom MIT [14]. Eine gleichzeitig gut zugängliche und gute Einführung in Deep Learning ist die Vorlesung von Ali Ghodsi der University of Waterloo [15].
 
 
 ### Quellen und Literatur
 
 [1] Edward Tufte, Beautiful Evidence. 2006.
+
 [2] https://www.inf.ed.ac.uk/teaching/courses/pi/2016_2017/phil/tufte-powerpoint.pdf
+
 [3] http://charliepark.org/slopegraphs/
+
 [4] https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0001OR&topic_id=1
+
 [5] Johns Hopkins University, Statistical Inference. https://www.coursera.org/learn/statistical-inference
+
 [6] TU Eindhoven, Improving your statistical inferences. https://www.coursera.org/learn/statistical-inferences
+
 [7] Chambers et al., Graphical methods for data analysis. 1983.
+
 [8] James et al., Introduction to statistical learning. 2013. Online unter http://www-bcf.usc.edu/~gareth/ISL/.
+
 [9] Kevin Murphy, Machine Learning: A probabilistic perspective. 2012.
+
 [10] https://github.com/stephlocke/datasauRus/
+
 [12] Goodfellow et al., Deep Learning. 2016. Online unter http://www.deeplearningbook.org/.
+
 [13] Stanford University, Natural Language Processing with Deep Learning. http://web.stanford.edu/class/cs224n/
+
 [14] MIT, Deep Learning for self-driving cars. http://selfdrivingcars.mit.edu/
+
 [15] University of Waterloo, Deep Learning. https://uwaterloo.ca/data-science/deep-learning
+
 [16] Ames Housing Dataset, http://www.amstat.org/publications/jse/v19n3/decock.pdf.
+
 [17] http://www.economist.com/news/science-and-technology/21724370-fake-news-you-aint-seen-nothing-yet-generating-convincing-audio-and-video-fake
 
